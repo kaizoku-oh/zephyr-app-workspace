@@ -15,7 +15,7 @@ $ west update
 # Copy vscode workspace file from the app to the outer workspace directory
 $ Copy-Item –Path app/zephyr-windows.code-workspace -Destination .
 
-# Build app
+# Build the app
 $ west build app -d app/build -b nucleo_f767zi
 
 # Turn on compilation database
@@ -27,12 +27,12 @@ $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 # Open vscode workspace
 $ code zephyr-windows.code-workspace
 
-# Open prj.conf and your Golioth PSK credentials
+# Open prj.conf and set your Golioth PSK credentials
 
-# Build app
+# Build the app
 $ west build app -d app/build -b nucleo_f767zi
 
-# Flash the app to the board
+# Flash the app on the board
 $ STM32_Programmer_CLI -c port=swd mode=UR -w app/build/zephyr/zephyr.bin 0x08000000
 ```
 
@@ -78,15 +78,19 @@ DHCPv4 attempts   : 1
 
 - [x] Shell over UART
 
-- [x] Add golioth sdk
+- [x] Add Golioth SDK
 
 - [ ] Set Golioth credentials via shell settings
 
-- [ ] Add Github workflow for CI
+- [ ] Add Github CI workflow
 
-- [ ] Update the README.md Build footprint automatically when running CI workflow
+- [ ] Update the README.md Build footprint table automatically when running CI workflow
 
 - [ ] Add GitHub badges to readme
+
+- [ ] Add LightDB and RPC example
+
+- [ ] Add OTA update example
 
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
