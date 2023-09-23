@@ -5,27 +5,32 @@ This repo is a playground for experimenting with a standalone Zephyr application
 ## 🚀 Getting started
 
 ```bash
-# initialize workspace for the app (main branch)
+# Initialize workspace for the app (main branch)
 $ west init -m https://github.com/kaizoku-oh/golioth-zephyr-app --mr main workspace
 $ cd workspace
 
-# update Zephyr modules
+# Update Zephyr modules
 $ west update
 
 # Move vscode workspace file from the app to the outer workspace directory
 $ Move-Item –Path app/zephyr-windows.code-workspace -Destination .
 
-# build app
+# Build app
 $ west build app -d app/build -b nucleo_f767zi
 
-# turn on compilation database
+# Turn on compilation database
 $ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-# retrieve `ZEPHYR_SDK_INSTALL_DIR`
+# Retrieve `ZEPHYR_SDK_INSTALL_DIR`
 $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 
-# open vscode workspace
+# Open vscode workspace
 $ code zephyr-windows.code-workspace
+
+# Open prj.conf and your Golioth PSK credentials
+
+# Build app
+$ west build app -d app/build -b nucleo_f767zi
 
 # Flash the app to the board
 $ STM32_Programmer_CLI -c port=swd mode=UR -w build/zephyr/zephyr.bin 0x08000000
