@@ -92,6 +92,8 @@ DHCPv4 attempts   : 1
 
 - [ ] Add OTA update example
 
+- [ ] Enable C++20
+
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
 
