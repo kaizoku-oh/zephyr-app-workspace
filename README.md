@@ -2,6 +2,8 @@
 
 This repo is a playground for experimenting with a standalone Zephyr application for STM32 using Golioth SDK.
 
+## 🚀 Getting started
+
 ```bash
 # initialize workspace for the app (main branch)
 $ west init -m https://github.com/kaizoku-oh/golioth-zephyr-app --mr main workspace
@@ -52,7 +54,7 @@ DHCPv4 requested  : 192.168.137.183
 DHCPv4 state      : bound
 DHCPv4 attempts   : 1
 ```
-### Build footprint
+### 🔨 Build footprint
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | -----------   | ----------- | ----------- | ----------- |
@@ -62,7 +64,7 @@ DHCPv4 attempts   : 1
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |
 
-## TODO ✅
+## ✅ TODO
 
 - [x] Blink board LED
 
@@ -78,7 +80,7 @@ DHCPv4 attempts   : 1
 
 - [ ] Update the README.md Build footprint automatically when running CI workflow
 
-## Credits
+## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
 
 It is following the [Golioth](https://github.com/golioth) recommended way to structure a zephyr app using manifest files, more on this in this [blog post](https://blog.golioth.io/improving-zephyr-project-structure-with-manifest-files/).
