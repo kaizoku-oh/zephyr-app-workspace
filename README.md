@@ -62,7 +62,7 @@ DHCPv4 requested  : 192.168.137.183
 DHCPv4 state      : bound
 DHCPv4 attempts   : 1
 ```
-### 🔨 Build footprint
+## 🔨 Build footprint
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | -----------   | ----------- | ----------- | ----------- |
@@ -72,7 +72,7 @@ DHCPv4 attempts   : 1
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |
 
-## ✅ TODO
+## ✅ ToDo
 
 - [x] Blink board LED
 
