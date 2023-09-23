@@ -12,7 +12,7 @@ $ cd workspace
 # Update Zephyr modules
 $ west update
 
-# Move vscode workspace file from the app to the outer workspace directory
+# Copy vscode workspace file from the app to the outer workspace directory
 $ Copy-Item –Path app/zephyr-windows.code-workspace -Destination .
 
 # Build app
@@ -87,6 +87,8 @@ DHCPv4 attempts   : 1
 - [ ] Add Github workflow for CI
 
 - [ ] Update the README.md Build footprint automatically when running CI workflow
+
+- [ ] Add GitHub badges to readme
 
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
