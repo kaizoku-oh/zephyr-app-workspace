@@ -13,7 +13,7 @@ $ cd workspace
 $ west update
 
 # Move vscode workspace file from the app to the outer workspace directory
-$ Move-Item –Path app/zephyr-windows.code-workspace -Destination .
+$ Copy-Item –Path app/zephyr-windows.code-workspace -Destination .
 
 # Build app
 $ west build app -d app/build -b nucleo_f767zi
@@ -33,7 +33,7 @@ $ code zephyr-windows.code-workspace
 $ west build app -d app/build -b nucleo_f767zi
 
 # Flash the app to the board
-$ STM32_Programmer_CLI -c port=swd mode=UR -w build/zephyr/zephyr.bin 0x08000000
+$ STM32_Programmer_CLI -c port=swd mode=UR -w app/build/zephyr/zephyr.bin 0x08000000
 ```
 
 Once the app is flashed open a serial monitor like PuTTy and reset your board.
