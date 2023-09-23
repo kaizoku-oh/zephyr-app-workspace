@@ -76,9 +76,7 @@ DHCPv4 attempts   : 1
 
 - [x] Blink board LED
 
-- [x] Print via USB
-
-- [x] Shell over USB
+- [x] Shell over UART
 
 - [x] Add golioth sdk
 
