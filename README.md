@@ -12,6 +12,9 @@ $ cd workspace
 # update Zephyr modules
 $ west update
 
+# Move vscode workspace file from the app to the outer workspace directory
+$ Move-Item –Path app/zephyr-windows.code-workspace -Destination .
+
 # build app
 $ west build app -d app/build -b nucleo_f767zi
 
