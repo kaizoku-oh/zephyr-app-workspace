@@ -10,7 +10,7 @@
 
 		// IntelliSense
 		"C_Cpp.default.compilerPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
-		"C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+		"C_Cpp.default.compileCommands": "${workspaceFolder}/app/build/compile_commands.json",
 
 		// File Associations
 		"files.associations": {}
@@ -19,48 +19,66 @@
 		"version": "2.0.0",
 		"tasks": [
 			{
-				"label": "West Build",
+				"label": "Build",
 				"type": "shell",
 				"group": {
 					"kind": "build",
 					"isDefault": true
 				},
-				"command": "${userHome}/zephyrproject/.venv/Scripts/west",
+				"command": "${userHome}/.virtualenvs/ZephyrProjects-PBWzBJX2/Scripts/west",
 				"args": [
 					"build",
+					"${workspaceFolder}/app",
+					"--build-dir",
+					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",
 					"-b",
-					"nrf52840dk_nrf52840"
+					"nucleo_f767zi"
 				],
 				"problemMatcher": [
 					"$gcc"
 				],
 			},
 			{
-				"label": "West Configurable Build",
+				"label": "Flash",
 				"type": "shell",
-				"group": {
-					"kind": "build",
-				},
-				"command": "${userHome}/zephyrproject/.venv/Scripts/west",
+				"command": "STM32_Programmer_CLI",
 				"args": [
-					"build",
-					"-p",
-					"${input:pristine}",
-					"-b",
-					"${input:board}"
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"app/build/zephyr/zephyr.bin",
+					"0x08000000"
 				],
 				"problemMatcher": [
 					"$gcc"
 				]
 			},
 			{
-				"label": "West Flash",
+				"label": "Clean",
 				"type": "shell",
-				"command": "${userHome}/zephyrproject/.venv/Scripts/west",
+				"command": "remove-Item",
 				"args": [
-					"flash"
+					"-path",
+					"app/build",
+					"-Recurse",
+					"-Force",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Erase",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"--connect",
+					"port=swd",
+					"-e",
+					"all"
 				],
 				"problemMatcher": [
 					"$gcc"
@@ -71,8 +89,8 @@
 			{
 				"id": "board",
 				"type": "promptString",
-				"default": "nrf52840dk_nrf52840",
-				"description": "See https://docs.zephyrproject.org/latest/boards/index.html"
+				"default": "nucleo_f767zi",
+				"description": "See https://www.st.com/en/evaluation-tools/nucleo-f767zi.html"
 			},
 			{
 				"id": "pristine",
@@ -92,37 +110,27 @@
 		"configurations": [
 			{
 				"name": "Launch",
-				"device": "nRF52840_xxAA",
 				"cwd": "${workspaceFolder}",
-				"executable": "build/zephyr/zephyr.elf",
+				"executable": "${workspaceFolder}/app/build/zephyr/zephyr.elf",
 				"request": "launch",
 				"type": "cortex-debug",
+				"servertype": "stlink",
+				"device": "STM32F767ZI",
+				"interface": "swd",
 				"runToEntryPoint": "main",
-				"servertype": "jlink",
+				"preLaunchTask": "West Build",
 				"gdbPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
-				"preLaunchTask": "West Build"
-			},
-			{
-				"name": "Attach",
-				"device": "nRF52840_xxAA",
-				"cwd": "${workspaceFolder}",
-				"executable": "build/zephyr/zephyr.elf",
-				"request": "attach",
-				"type": "cortex-debug",
-				"runToEntryPoint": "main",
-				"servertype": "jlink",
-				"gdbPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+				"armToolchainPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/arm-zephyr-eabi/bin",
 			},
 		]
 	},
 	"extensions": {
 		"recommendations": [
-			"ms-vscode.cpptools-extension-pack",
+			"ms-vscode.cpptools",
 			"ms-python.python",
 			"ms-vscode.vscode-embedded-tools",
-			"ms-vscode.vscode-serial-monitor",
 			"marus25.cortex-debug",
-			"donjayamanne.python-environment-manager"
+			"plorefice.devicetree"
 		]
 	}
 }

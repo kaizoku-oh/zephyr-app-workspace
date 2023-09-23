@@ -1,0 +1,31 @@
+manifest:
+  version: 0.7
+
+  defaults:
+    remote: zephyrproject
+
+  remotes:
+    - name: zephyrproject
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      repo-path: zephyr
+      revision: 356c8cbe63ae01b3ab438382639d25bb418a0213 # v3.4.0
+      path: zephyr
+      import:
+        path-prefix: deps
+        name-allowlist:
+          - cmsis
+          - hal_stm32
+          - mbedtls
+          - zcbor
+
+    - name: golioth
+      path: deps/modules/lib/golioth
+      revision: main
+      url: https://github.com/golioth/golioth-zephyr-sdk.git
+      import: west-external.yml
+
+  self:
+    path: app

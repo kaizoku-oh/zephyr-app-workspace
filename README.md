@@ -1,30 +1,84 @@
-# zephyr-vscode-example
+# Standalone Golioth Zephyr application
 
-This is an example configuration for setting up Visual Studio Code for Zephyr application development. It was originally created for the talk entitled, "[Zephyr & Visual Studio Code: How to Develop Zephyr Apps with a Modern, Visual IDE](https://youtu.be/IKNHPmG-Qxo)" at EOSS 2023.
+This repo is a playground for experimenting with a standalone Zephyr application for STM32 using Golioth SDK.
 
-## Example details
+```bash
+# initialize workspace for the app (main branch)
+$ west init -m https://github.com/kaizoku-oh/golioth-zephyr-app --mr main workspace
+$ cd workspace
 
-There are many, many different ways to develop a Zephyr application. This example currently assumes:
+# update Zephyr modules
+$ west update
 
-* All paths follow the Getting Started Guide
-* Uses the Zephyr SDK where possible (ex. Host tools are not available on macOS or Windows)
-* In-tree development
-* Use of Python Virtual Environments
-* Building `samples/basic/thread` so we can demonstrate thread-aware debugging
-* Targetting an nRF52840 DK 
+# build app
+$ west build app -d app/build -b nucleo_f767zi
 
-## Steps
+# turn on compilation database
+$ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-1. Follow the Zephyr [Getting Started Guide](https://docs.zephyrproject.org/latest/develop/getting_started/index.html) for your OS and make sure to use virtual environments
-2. Turn on Compilation Database with `west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`
-3. Copy the `.code-workspace` for your OS to `samples/basic/thread` as well the `.vscode` folder
-4. Retrieve `ZEPHYR_SDK_INSTALL_DIR` with `cmake -P zephyr/cmake/verify-toolchain.cmake`. It'll be the prefix of the `C_Cpp.default.compilerPath`
-5. Set the `Python: Interpreter Path`
-6. CD to `samples/basic/thread`
-7. Try the different build tasks and the flash task
-8. Try to connect over the serial terminal
-9. TODO try step debugging
+# retrieve `ZEPHYR_SDK_INSTALL_DIR`
+$ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
+
+# open vscode workspace
+$ code zephyr-windows.code-workspace
+
+# Flash the app to the board
+$ STM32_Programmer_CLI -c port=swd mode=UR -w build/zephyr/zephyr.bin 0x08000000
+```
+
+Once the app is flashed open a serial monitor like PuTTy and reset your board.
+
+```bash
+# Check that you gor an IP address from the network
+uart:~$ net iface
+Interface 0x20020dc0 (Ethernet) [1]
+===================================
+Link addr : 00:80:E1:32:32:39
+MTU       : 1500
+Flags     : AUTO_START,IPv4
+Ethernet capabilities supported:
+        10 Mbits
+        100 Mbits
+IPv4 unicast addresses (max 1):
+        192.168.137.183 DHCP preferred
+IPv4 multicast addresses (max 1):
+        <none>
+IPv4 gateway : 192.168.137.1
+IPv4 netmask : 255.255.255.0
+DHCPv4 lease time : 604800
+DHCPv4 renew time : 302400
+DHCPv4 server     : 192.168.137.1
+DHCPv4 requested  : 192.168.137.183
+DHCPv4 state      : bound
+DHCPv4 attempts   : 1
+```
+### Build footprint
+
+| Memory region | Used Size   | Region Size | %age Used   |
+| -----------   | ----------- | ----------- | ----------- |
+| FLASH         | 232428 B    | 2   MB      | 11.08%      |
+| RAM           | 68956  B    | 384 KB      | 17.54%      |
+| QSPI          | 0      GB   | 256 MB      | 0.00%       |
+| DTCM          | 12544  B    | 128 KB      | 9.57%       |
+| IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |
+
+## TODO ✅
+
+- [x] Blink board LED
+
+- [x] Print via USB
+
+- [x] Shell over USB
+
+- [x] Add golioth sdk
+
+- [ ] Set Golioth credentials via shell settings
+
+- [ ] Add Github workflow for CI
+
+- [ ] Update the README.md Build footprint automatically when running CI workflow
 
 ## Credits
+This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
 
-https://zmk.dev/docs/development/ide-integration
+It is following the [Golioth](https://github.com/golioth) recommended way to structure a zephyr app using manifest files, more on this in this [blog post](https://blog.golioth.io/improving-zephyr-project-structure-with-manifest-files/).
