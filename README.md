@@ -1,12 +1,12 @@
-# Standalone Golioth Zephyr application
+# Standalone STM32 Zephyr application
 
-This repo is a playground for experimenting with a standalone Zephyr application for STM32 using Golioth SDK.
+This repo can be used as a template and a playground for experimenting with a standalone Zephyr application for STM32.
 
 ## 🚀 Getting started
 
 ```bash
 # Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/golioth-zephyr-app --mr main workspace
+$ west init -m https://github.dev/kaizoku-oh/stm32-zephyr-app --mr main workspace
 $ cd workspace
 
 # Update Zephyr modules
@@ -39,30 +39,10 @@ $ STM32_Programmer_CLI -c port=swd mode=UR -w app/build/zephyr/zephyr.bin 0x0800
 Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
 ```bash
-# Check that you gor an IP address from the network
-uart:~$ net iface
-Interface 0x20020dc0 (Ethernet) [1]
-===================================
-Link addr : 00:80:E1:32:32:39
-MTU       : 1500
-Flags     : AUTO_START,IPv4
-Ethernet capabilities supported:
-        10 Mbits
-        100 Mbits
-IPv4 unicast addresses (max 1):
-        192.168.137.183 DHCP preferred
-IPv4 multicast addresses (max 1):
-        <none>
-IPv4 gateway : 192.168.137.1
-IPv4 netmask : 255.255.255.0
-DHCPv4 lease time : 604800
-DHCPv4 renew time : 302400
-DHCPv4 server     : 192.168.137.1
-DHCPv4 requested  : 192.168.137.183
-DHCPv4 state      : bound
-DHCPv4 attempts   : 1
+uart:~$ 
 ```
-## 🔨 Build footprint
+
+## 🔨 Build footprint for NUCLEO-F767
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | -----------   | ----------- | ----------- | ----------- |
@@ -78,17 +58,11 @@ DHCPv4 attempts   : 1
 
 - [x] Shell over UART
 
-- [x] Add Golioth SDK
-
-- [ ] Set Golioth credentials via shell settings
-
 - [ ] Add Github CI workflow
 
 - [ ] Update the README.md Build footprint table automatically when running CI workflow
 
 - [ ] Add GitHub badges to readme
-
-- [ ] Add LightDB and RPC example
 
 - [ ] Add OTA update example
 

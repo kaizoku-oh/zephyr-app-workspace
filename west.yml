@@ -18,14 +18,6 @@ manifest:
         name-allowlist:
           - cmsis
           - hal_stm32
-          - mbedtls
-          - zcbor
-
-    - name: golioth
-      path: deps/modules/lib/golioth
-      revision: main
-      url: https://github.com/golioth/golioth-zephyr-sdk.git
-      import: west-external.yml
 
   self:
     path: app
