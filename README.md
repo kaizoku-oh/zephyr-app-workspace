@@ -26,21 +26,16 @@ $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 
 # Open vscode workspace
 $ code zephyr-windows.code-workspace
-
-# Open prj.conf and set your Golioth PSK credentials
-
-# Build the app
-$ west build app -d app/build -b nucleo_f767zi
-
-# Flash the app on the board
-$ STM32_Programmer_CLI -c port=swd mode=UR -w app/build/zephyr/zephyr.bin 0x08000000
 ```
+
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
+
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/318b48ac-2423-480a-a4a7-7e031f2e9456)
 
 Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
-```bash
-uart:~$ 
-```
+
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
 
 ## 🔨 Build footprint for NUCLEO-F767
 
