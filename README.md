@@ -33,7 +33,7 @@ Once vscode is open you can run your workspace tasks like the following
 
 You can run the tasks in the following order clean -> build -> erase -flash
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/318b48ac-2423-480a-a4a7-7e031f2e9456)
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/da8eb606-fbcc-4dc4-8ac7-c833b4202f1d)
 
 Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
