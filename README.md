@@ -31,7 +31,7 @@ Once vscode is open you can run your workspace tasks like the following
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
 
-You can run the tasks in the following order clean -> build -> erase -flash
+You can run the tasks in the following order Clean => Build => Erase => Flash
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
 
