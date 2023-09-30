@@ -6,7 +6,7 @@ This repo can be used as a template and a playground for experimenting with a st
 
 ```bash
 # Initialize workspace for the app (main branch)
-$ west init -m https://github.dev/kaizoku-oh/stm32-zephyr-app --mr main workspace
+$ west init -m https://github.com/kaizoku-oh/stm32-zephyr-app --mr main workspace
 $ cd workspace
 
 # Update Zephyr modules
