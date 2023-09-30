@@ -35,7 +35,7 @@ You can run the tasks in the following order clean -> build -> erase -flash
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
 
-Once the app is flashed open a serial monitor like PuTTy and reset your board.
+Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
 
