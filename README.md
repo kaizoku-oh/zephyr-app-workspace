@@ -27,13 +27,15 @@ $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 # Open vscode workspace
 $ code zephyr-windows.code-workspace
 ```
+Once vscode is open you can run your workspace tasks like the following
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
+
+You can run the tasks in the following order clean -> build -> erase -flash
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/318b48ac-2423-480a-a4a7-7e031f2e9456)
 
 Once the app is flashed open a serial monitor like PuTTy and reset your board.
-
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
 
@@ -52,6 +54,8 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 - [x] Blink board LED
 
 - [x] Shell over UART
+
+- [ ] Fix vscode launch with cortex-debug
 
 - [ ] Add Github CI workflow
 
