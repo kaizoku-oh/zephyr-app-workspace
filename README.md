@@ -57,6 +57,12 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
 - [ ] Fix vscode launch with cortex-debug
 
+- [ ] Add multithreading code
+
+- [ ] Add application events manager
+
+- [ ] Add die temp sensor app
+
 - [ ] Add Github CI workflow
 
 - [ ] Update the README.md Build footprint table automatically when running CI workflow
