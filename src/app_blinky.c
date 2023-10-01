@@ -22,18 +22,13 @@ K_TIMER_DEFINE(blinky_timer, blinky_timer_elapsed_cb, NULL);
 
 static void blinky_thread_entry(void)
 {
-<<<<<<< HEAD
   blinky_event_t event = BLINKY_EVENT_MAX;
-=======
-  uint32_t event = 0;
->>>>>>> b5a03695368ac9f4f7326c1eac9bd9ec61a37b60
   const struct gpio_dt_spec greenLED = GPIO_DT_SPEC_GET(BLINKY_LED_NODE, gpios);
 
   configure_led(greenLED);
   k_timer_start(&blinky_timer, K_MSEC(100), K_MSEC(100));
 
   while (true) {
-<<<<<<< HEAD
     if (k_msgq_get(&blinky_msg_queue, &event, K_FOREVER) == 0) {
       switch (event) {
         case BLINKY_EVENT_TOGGLE_LED: {
@@ -43,16 +38,6 @@ static void blinky_thread_entry(void)
         default: {
           break;
         }
-=======
-    k_msgq_get(&blinky_msg_queue, &event, K_FOREVER);
-    switch (event) {
-      case BLINKY_EVENT_TOGGLE_LED: {
-        toggle_led(greenLED);
-        break;
-      }
-      default: {
-        break;
->>>>>>> b5a03695368ac9f4f7326c1eac9bd9ec61a37b60
       }
     }
   }
