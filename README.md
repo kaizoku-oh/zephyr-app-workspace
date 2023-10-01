@@ -39,14 +39,12 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
 ![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
 
-## 🔨 Build footprint for NUCLEO-F767
+## 🔨 Build footprint for NUCLEO-L476RG
 
 | Memory region | Used Size   | Region Size | %age Used   |
-| -----------   | ----------- | ----------- | ----------- |
-| FLASH         | 232428 B    | 2   MB      | 11.08%      |
-| RAM           | 68956  B    | 384 KB      | 17.54%      |
-| QSPI          | 0      GB   | 256 MB      | 0.00%       |
-| DTCM          | 12544  B    | 128 KB      | 9.57%       |
+| ------------- | ----------- | ----------- | ----------- |
+| FLASH         | 41388  B    | 1   MB      | 3.95%       |
+| RAM           | 12568  B    | 96  KB      | 12.78%      |
 | IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |
 
 ## ✅ ToDo
@@ -56,6 +54,12 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 - [x] Shell over UART
 
 - [ ] Fix vscode launch with cortex-debug
+
+- [x] Add multithreading code
+
+- [ ] Add application events manager
+
+- [ ] Add die temp sensor app
 
 - [ ] Add Github CI workflow
 
