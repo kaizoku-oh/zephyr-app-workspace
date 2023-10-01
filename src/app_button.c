@@ -20,13 +20,18 @@ K_MSGQ_DEFINE(button_msg_queue, sizeof(uint32_t), 10, 1);
 
 static void button_thread_entry(void)
 {
+<<<<<<< HEAD
   button_event_t event = BUTTON_EVENT_MAX;
+=======
+  uint32_t event = 0;
+>>>>>>> b5a03695368ac9f4f7326c1eac9bd9ec61a37b60
   struct gpio_callback button_cb_data = {0};
   const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(BUTTON_NODE, gpios, {0});
 
   configure_button(button, button_cb_data);
 
   while (true) {
+<<<<<<< HEAD
     if (k_msgq_get(&button_msg_queue, &event, K_FOREVER) == 0) {
       switch (event) {
         case BUTTON_EVENT_PRESSED: {
@@ -36,6 +41,16 @@ static void button_thread_entry(void)
         default: {
           break;
         }
+=======
+    k_msgq_get(&button_msg_queue, &event, K_FOREVER);
+    switch (event) {
+      case BUTTON_EVENT_PRESSED: {
+        printk("Button is pressed!\r\n");
+        break;
+      }
+      default: {
+        break;
+>>>>>>> b5a03695368ac9f4f7326c1eac9bd9ec61a37b60
       }
     }
   }
