@@ -6,9 +6,9 @@ class MyClass {
 public:
   MyClass();
   MyClass(int attribute);
+  ~MyClass();
   int getMyAttribute();
   void setMyAttribute(int attribute);
-  ~MyClass();
 
 private:
   int _myAttribute;

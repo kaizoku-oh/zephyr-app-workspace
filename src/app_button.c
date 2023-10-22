@@ -13,7 +13,7 @@ typedef enum {
 static void button_thread_entry(void);
 static void button_notify_thread(uint32_t event);
 static void button_pressed_isr(const struct device *dev, struct gpio_callback *cb, uint32_t pins);
-static void configure_button(const struct gpio_dt_spec *gpio, struct gpio_callback *button_cb_data);
+static void button_configure(const struct gpio_dt_spec *gpio, struct gpio_callback *button_cb_data);
 
 K_THREAD_DEFINE(button_thread, 1024, button_thread_entry, NULL, NULL, NULL, 7, 0, 0);
 K_MSGQ_DEFINE(button_msg_queue, sizeof(uint32_t), 10, 1);
@@ -24,7 +24,7 @@ static void button_thread_entry(void)
   struct gpio_callback button_cb_data = {0};
   const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(BUTTON_NODE, gpios, {0});
 
-  configure_button(&button, &button_cb_data);
+  button_configure(&button, &button_cb_data);
 
   while (true) {
     if (k_msgq_get(&button_msg_queue, &event, K_FOREVER) == 0) {
@@ -53,7 +53,7 @@ static void button_pressed_isr(const struct device *dev, struct gpio_callback *c
   button_notify_thread(BUTTON_EVENT_PRESSED);
 }
 
-static void configure_button(const struct gpio_dt_spec *gpio, struct gpio_callback *button_cb_data)
+static void button_configure(const struct gpio_dt_spec *gpio, struct gpio_callback *button_cb_data)
 {
   int ret = 0;
 

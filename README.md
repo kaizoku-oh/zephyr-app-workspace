@@ -71,6 +71,8 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
 - [x] Enable C++20
 
+- [ ] Add lambda callback to Button class
+
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
 

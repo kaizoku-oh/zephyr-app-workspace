@@ -8,8 +8,6 @@ target_include_directories(app PRIVATE include)
 
 target_sources(app PRIVATE
   src/main.cpp
-  src/MyClass.cpp
-  src/AppTemplate.cpp
-  src/app_blinky.c
-  src/app_button.c
+  src/Button.cpp
+  src/Led.cpp
 )
