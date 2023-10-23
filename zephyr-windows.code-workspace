@@ -34,7 +34,7 @@
 					"-p",
 					"auto",
 					"-b",
-					"nucleo_l476rg"
+					"nucleo_f767zi"
 				],
 				"problemMatcher": [
 					"$gcc"
@@ -83,7 +83,7 @@
 				"problemMatcher": [
 					"$gcc"
 				]
-			},
+},
 			{
 				"label": "MenuConfig",
 				"type": "shell",
@@ -96,7 +96,7 @@
 					"-p",
 					"auto",
 					"-b",
-					"nucleo_l476rg",
+					"nucleo_f767zi",
 					"-t",
 					"menuconfig"
 				],
@@ -109,8 +109,8 @@
 			{
 				"id": "board",
 				"type": "promptString",
-				"default": "nucleo_l476rg",
-				"description": "See https://www.st.com/en/evaluation-tools/nucleo-l476rg.html"
+				"default": "nucleo_f767zi",
+				"description": "See https://www.st.com/en/evaluation-tools/nucleo-f767zi.html"
 			},
 			{
 				"id": "pristine",
@@ -136,12 +136,12 @@
 				"type": "cortex-debug",
 				"servertype": "stlink",
 				"device": "STM32F767ZI",
-								"interface": "swd",
+				"interface": "swd",
 				"runToEntryPoint": "main",
 				"preLaunchTask": "Build",
 				"gdbPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
 				"armToolchainPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/arm-zephyr-eabi/bin",
-							},
+			},
 		]
 	},
 	"extensions": {
