@@ -59,7 +59,7 @@ Once the app is flashed open a serial monitor like PuTTy and reset your board.
 
 - [ ] Add application events manager
 
-- [ ] Add die temp sensor app
+- [x] Add die temp sensor app
 
 - [ ] Add Github CI workflow
 
