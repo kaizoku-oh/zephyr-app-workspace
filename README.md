@@ -1,5 +1,11 @@
 # Standalone STM32 Zephyr application
 
+[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/stm32-zephyr-app/actions/workflows/build.yaml)
+[![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/releases)
+[![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/issues)
+![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/stm32-zephyr-app)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache-blue.svg)](https://github.com/kaizoku-oh/stm32-zephyr-app/blob/main/LICENSE)
+
 This repo can be used as a template and a playground for experimenting with a standalone Zephyr application for STM32.
 
 ## 🚀 Getting started
@@ -63,11 +69,11 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add die temp sensor class
 
-- [ ] Add Github CI workflow
+- [x] Add Github CI workflow
 
 - [ ] Update the README.md Build footprint table automatically when running CI workflow
 
-- [ ] Add GitHub badges to readme
+- [x] Add GitHub badges to readme
 
 - [ ] Add OTA update example
 
