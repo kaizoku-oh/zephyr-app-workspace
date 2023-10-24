@@ -10,7 +10,7 @@ Button::Button(const struct gpio_dt_spec *gpio) {
     return;
   }
 
-  _gpioDevice = gpio;
+  this->_gpioDevice = gpio;
 
   if (!gpio_is_ready_dt(gpio)) {
     printk("Error: button device %s is not ready\n", gpio->port->name);
@@ -28,5 +28,5 @@ Button::~Button() {
 }
 
 bool Button::isPressed() {
-  return (gpio_pin_get_dt(_gpioDevice) == 0) ? true : false;
+  return (gpio_pin_get_dt(this->_gpioDevice) == 0) ? true : false;
 }

@@ -11,9 +11,9 @@ Temperature::Temperature(const struct device *device) {
     return;
   }
 
-  _device = device;
+  this->_device = device;
 
-  if (!device_is_ready(_device)) {
+  if (!device_is_ready(this->_device)) {
     printk("Error: Device is not ready\r\n");
     return;
   }
@@ -27,13 +27,13 @@ double Temperature::read() {
   int ret = 0;
   struct sensor_value value = {0};
 
-  ret = sensor_sample_fetch(_device);
+  ret = sensor_sample_fetch(this->_device);
   if (ret) {
       printk("Failed to fetch sample (%d)\n", ret);
       return 0;
   }
 
-  ret = sensor_channel_get(_device, SENSOR_CHAN_DIE_TEMP, &value);
+  ret = sensor_channel_get(this->_device, SENSOR_CHAN_DIE_TEMP, &value);
   if (ret) {
       printk("Failed to get data (%d)\n", ret);
       return 0;
