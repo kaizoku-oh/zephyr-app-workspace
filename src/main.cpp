@@ -87,6 +87,7 @@ int main(void) {
 
 static void serial_callback(const struct device *dev, void *userData) {
   uint8_t rxByte = 0;
+  int length = 0;
   static uint8_t index = 0;
 
   if (!uart_irq_update(dev)) {
@@ -97,11 +98,23 @@ static void serial_callback(const struct device *dev, void *userData) {
     return;
   }
 
-  while (uart_fifo_read(dev, &rxByte, sizeof(rxByte))) {
+  length = uart_fifo_read(dev, &rxByte, sizeof(rxByte));
+  if (length == 1) {
+    // Append byte to buffer in a circular way
     if (index >= sizeof(rxBuffer)) {
       index = 0;
     }
     rxBuffer[index++] = rxByte;
+  } else if (length == 0) {
+    printk("Got a UART RX interrupt but FIFO is empty!\r\n");
+  } else if (length > 1) {
+    printk("Didn't expect to find more than 1 byte in FIFO!\r\n");
+  } else if (length == -ENOSYS) {
+    printk("uart_fifo_read() function is not implemented\r\n");
+  } else if (length == -ENOTSUP) {
+    printk("UART API is not enabled");
+  } else {
+    printk("Unknown error: %d\r\n", length);
   }
 
   printk("serial_callback()\r\n");
