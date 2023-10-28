@@ -1,3 +1,7 @@
 &die_temp {
     status = "okay";
 };
+
+&usart2 {
+    status = "okay";
+};
