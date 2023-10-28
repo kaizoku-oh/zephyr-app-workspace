@@ -1,17 +1,16 @@
 #include <stdlib.h>
+#include <inttypes.h>
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/uart.h>
 
 #include "Button.h"
 #include "Led.h"
 #include "Temperature.h"
+#include "Serial.h"
 
 #define MAIN_THREAD_SLEEP_TIME_MS (100)
-
-static void serial_callback(const struct device *dev, void *userData);
 
 uint8_t rxBuffer[8] = {0};
 
@@ -24,38 +23,7 @@ int main(void) {
 
   const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 
-
-  /* ******************************************************************************************* */
   const struct device *serialDevice = DEVICE_DT_GET(DT_NODELABEL(usart2));
-
-  if (!device_is_ready(serialDevice)) {
-    printk("Unable to get UART device\r\n");
-    return -EIO;
-  }
-
-  int ret = uart_irq_callback_user_data_set(serialDevice, serial_callback, NULL);
-  if (ret < 0) {
-    if (ret == -ENOTSUP) {
-      printk("Interrupt-driven UART API support not enabled\r\n");
-    } else if (ret == -ENOSYS) {
-      printk("UART device does not support interrupt-driven API\r\n");
-    } else {
-      printk("Error setting UART callback: %d\r\n", ret);
-    }
-    return 0;
-  }
-
-  uart_irq_rx_enable(serialDevice);
-
-  uart_poll_out(serialDevice, 'B');
-  uart_poll_out(serialDevice, 'a');
-  uart_poll_out(serialDevice, 'y');
-  uart_poll_out(serialDevice, 'r');
-  uart_poll_out(serialDevice, 'e');
-  uart_poll_out(serialDevice, 'm');
-  uart_poll_out(serialDevice, '\r');
-  uart_poll_out(serialDevice, '\n');
-  /* ******************************************************************************************* */
 
   Button button(&buttonGpio);
 
@@ -65,16 +33,18 @@ int main(void) {
 
   Temperature temperature(temperatureDevice);
 
+  Serial serial(serialDevice);
+
+  serial.onReceive([](uint8_t *data, uint32_t length) {
+    printk("Received length: %" PRIu32 "\r\n", length);
+    printk("Received byte: %c\r\n", *data);
+  });
+  serial.write((uint8_t *)"Hello world!\r\n", (sizeof("Hello world!\r\n") - 1));
+
   while (true) {
     if (button.isPressed()) {
       printk("Button is pressed\r\n");
       printk("CPU temperature: %.1f °C\r\n", temperature.read());
-
-      printk("rxBuffer[%d] = {", sizeof(rxBuffer));
-      for (size_t index = 0; index < sizeof(rxBuffer); index++) {
-        printk("'%c'%s", rxBuffer[index], (index == (sizeof(rxBuffer) -1)) ? "}\r\n" : ", ");
-      }
-
       redLed.toggle();
       greenLed.toggle();
       blueLed.toggle();
@@ -83,39 +53,4 @@ int main(void) {
   }
 
   return EXIT_SUCCESS;
-}
-
-static void serial_callback(const struct device *dev, void *userData) {
-  uint8_t rxByte = 0;
-  int length = 0;
-  static uint8_t index = 0;
-
-  if (!uart_irq_update(dev)) {
-    return;
-  }
-
-  if (!uart_irq_rx_ready(dev)) {
-    return;
-  }
-
-  length = uart_fifo_read(dev, &rxByte, sizeof(rxByte));
-  if (length == 1) {
-    // Append byte to buffer in a circular way
-    if (index >= sizeof(rxBuffer)) {
-      index = 0;
-    }
-    rxBuffer[index++] = rxByte;
-  } else if (length == 0) {
-    printk("Got a UART RX interrupt but FIFO is empty!\r\n");
-  } else if (length > 1) {
-    printk("Didn't expect to find more than 1 byte in FIFO!\r\n");
-  } else if (length == -ENOSYS) {
-    printk("uart_fifo_read() function is not implemented\r\n");
-  } else if (length == -ENOTSUP) {
-    printk("UART API is not enabled");
-  } else {
-    printk("Unknown error: %d\r\n", length);
-  }
-
-  printk("serial_callback()\r\n");
 }

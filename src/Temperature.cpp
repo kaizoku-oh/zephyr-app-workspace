@@ -5,7 +5,6 @@
 #include "Temperature.h"
 
 Temperature::Temperature(const struct device *device) {
-
   if (device == NULL) {
     printk("Error: Invalid argument\r\n");
     return;
