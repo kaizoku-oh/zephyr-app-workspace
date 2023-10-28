@@ -43,7 +43,7 @@ You can run the tasks in the following order Clean => Build => Erase => Flash
 
 Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
 
 ## 🔨 Build footprint for NUCLEO-F767ZI
 
