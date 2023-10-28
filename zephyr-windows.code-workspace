@@ -83,7 +83,15 @@
 				"problemMatcher": [
 					"$gcc"
 				]
-},
+			},
+			{
+				"label": "Update",
+				"type": "shell",
+				"command": "${userHome}/.virtualenvs/ZephyrProjects-PBWzBJX2/Scripts/west",
+				"args": [
+					"update"
+				]
+			},
 			{
 				"label": "MenuConfig",
 				"type": "shell",

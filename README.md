@@ -43,14 +43,14 @@ You can run the tasks in the following order Clean => Build => Erase => Flash
 
 Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/ccf05b52-55c3-415d-a4ec-01410bd57744)
+![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
 
 ## 🔨 Build footprint for NUCLEO-F767ZI
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 91048  B    | 2   MB      | 4.34%       |
-| RAM           | 17352  B    | 384 KB      | 4.41%       |
+| FLASH         | 67500  B    | 2   MB      | 3.27%       |
+| RAM           | 15240  B    | 384 KB      | 3.89%       |
 | QSPI          | 0      GB   | 256 MB      | 0.00%       |
 | DTCM          | 0      GB   | 128 KB      | 0.00%       |
 | IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |

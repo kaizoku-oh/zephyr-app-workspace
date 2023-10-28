@@ -11,4 +11,5 @@ target_sources(app PRIVATE
   src/Button.cpp
   src/Led.cpp
   src/Temperature.cpp
+  src/Serial.cpp
 )
