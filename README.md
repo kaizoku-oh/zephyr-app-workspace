@@ -81,6 +81,18 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add lambda callback to Button class
 
+- [x] Add lambda callback to Serial class
+
+- [ ] Add Network manager class
+
+- [ ] Add Local class for managing local time and geo-location
+
+- [ ] Add cloud client class
+
+- [ ] Add NVS config class
+
+- [ ] Add an out-of-tree driver
+
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
 

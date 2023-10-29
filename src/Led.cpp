@@ -9,7 +9,7 @@ Led::Led(const struct gpio_dt_spec *gpio) {
     return;
   }
 
-  this->_gpioDevice = gpio;
+  this->_device = gpio;
 
   if (!gpio_is_ready_dt(gpio)) {
     printk("Error: Led device %s is not ready\n", gpio->port->name);
@@ -27,17 +27,17 @@ Led::~Led() {
 }
 
 void Led::on() {
-  gpio_pin_set_dt(this->_gpioDevice, 1);
+  gpio_pin_set_dt(this->_device, 1);
 }
 
 void Led::off() {
-  gpio_pin_set_dt(this->_gpioDevice, 0);
+  gpio_pin_set_dt(this->_device, 0);
 }
 
 void Led::toggle() {
   int ret = 0;
 
-  ret = gpio_pin_toggle_dt(this->_gpioDevice);
+  ret = gpio_pin_toggle_dt(this->_device);
   if (ret < 0) {
     printk("Failed to toggle LED pin!\r\n");
     return;
