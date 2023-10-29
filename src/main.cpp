@@ -4,6 +4,7 @@
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/sys/ring_buffer.h>
 
 #include "Button.h"
 #include "Led.h"
@@ -11,6 +12,10 @@
 #include "Serial.h"
 
 #define MAIN_THREAD_SLEEP_TIME_MS (100)
+#define RING_BUFFER_SIZE (1024)
+
+static struct ring_buf ringBuffer;
+static uint8_t buffer[RING_BUFFER_SIZE];
 
 int main(void) {
   // Reference devices from device tree
@@ -29,9 +34,14 @@ int main(void) {
   Temperature temperature(temperatureDevice);
   Serial serial(serialDevice);
 
+  uint8_t rxData[8] = {0};
+  uint8_t length = 0;
+
+  ring_buf_init(&ringBuffer, sizeof(buffer), buffer);
+
   // Register serial callback as a lambda function
   serial.onReceive([](uint8_t *data, uint32_t length) {
-    printk("Received %d byte%s: %.*s\r\n", length, (length == 1)?"":"s", length, data);
+    ring_buf_put(&ringBuffer, data, length);
   });
 
   // Write a string over serial
@@ -42,6 +52,8 @@ int main(void) {
     if (button.isPressed()) {
       printk("Button is pressed\r\n");
       printk("CPU temperature: %.1f °C\r\n", temperature.read());
+      length = ring_buf_get(&ringBuffer, rxData, sizeof(rxData));
+      printk("Received data: %.*s\r\n", length, rxData);
       redLed.toggle();
       greenLed.toggle();
       blueLed.toggle();
