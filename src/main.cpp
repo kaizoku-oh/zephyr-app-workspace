@@ -1,5 +1,8 @@
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include <inttypes.h>
+
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
