@@ -11,7 +11,7 @@ public:
   bool isPressed();
 
 private:
-  const struct gpio_dt_spec *_gpioDevice;
+  const struct gpio_dt_spec *_device;
 
 };
 

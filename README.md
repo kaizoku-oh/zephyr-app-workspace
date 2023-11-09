@@ -1,18 +1,18 @@
 # Standalone STM32 Zephyr application
 
-[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/stm32-zephyr-app/actions/workflows/build.yaml)
-[![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/releases)
-[![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/issues)
-![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/stm32-zephyr-app)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache-blue.svg)](https://github.com/kaizoku-oh/stm32-zephyr-app/blob/main/LICENSE)
+[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/zephyr-app-workspace/actions/workflows/build.yaml)
+[![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/releases)
+[![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/issues)
+![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/zephyr-app-workspace)
+[![License](https://img.shields.io/github/license/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/blob/main/LICENSE)
 
-This repo can be used as a template and a playground for experimenting with a standalone Zephyr application for STM32.
+This repo can be used as a template and a playground for experimenting with a standalone Zephyr application.
 
 ## 🚀 Getting started
 
 ```bash
 # Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/stm32-zephyr-app --mr main workspace
+$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
 $ cd workspace
 
 # Update Zephyr modules
@@ -63,7 +63,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Fix vscode launch with cortex-debug
 
-- [x] Add multithreading code
+- [ ] Add multithreading code
 
 - [ ] Add application events manager
 
@@ -80,6 +80,18 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 - [x] Enable C++20
 
 - [ ] Add lambda callback to Button class
+
+- [x] Add lambda callback to Serial class
+
+- [ ] Add Network manager class
+
+- [ ] Add Local class for managing local time and geo-location
+
+- [ ] Add cloud client class
+
+- [ ] Add NVS config class
+
+- [ ] Add an out-of-tree driver
 
 ## 💳 Credits
 This project is generated from the [zephyr-vscode-example](https://github.com/beriberikix/zephyr-vscode-example) template by [Jonathan Beri](https://github.com/beriberikix).
