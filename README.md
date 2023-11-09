@@ -61,6 +61,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
+- [ ] Add a script to download ans setup the project (intellisence, structure...)
+
 - [ ] Fix vscode launch with cortex-debug
 
 - [ ] Add multithreading code
