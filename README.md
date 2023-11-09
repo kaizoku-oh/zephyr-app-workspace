@@ -1,18 +1,18 @@
 # Standalone STM32 Zephyr application
 
-[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/stm32-zephyr-app/actions/workflows/build.yaml)
-[![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/releases)
-[![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/issues)
-![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/stm32-zephyr-app)
-[![License](https://img.shields.io/github/license/kaizoku-oh/stm32-zephyr-app)](https://github.com/kaizoku-oh/stm32-zephyr-app/blob/main/LICENSE)
+[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/zephyr-app-workspace/actions/workflows/build.yaml)
+[![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/releases)
+[![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/issues)
+![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/zephyr-app-workspace)
+[![License](https://img.shields.io/github/license/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/blob/main/LICENSE)
 
-This repo can be used as a template and a playground for experimenting with a standalone Zephyr application for STM32.
+This repo can be used as a template and a playground for experimenting with a standalone Zephyr application.
 
 ## 🚀 Getting started
 
 ```bash
 # Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/stm32-zephyr-app --mr main workspace
+$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
 $ cd workspace
 
 # Update Zephyr modules
