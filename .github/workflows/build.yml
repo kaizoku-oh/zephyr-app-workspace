@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Clone the repo
         run: |
-          west init -m https://github.com/kaizoku-oh/stm32-zephyr-app --mr main workspace
+          west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
           cd workspace
           west update
 
