@@ -65,7 +65,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Fix vscode launch with cortex-debug
 
-- [ ] Add multithreading code
+- [x] Add multithreading code
 
 - [ ] Add application events manager
 
