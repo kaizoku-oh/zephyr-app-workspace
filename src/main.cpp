@@ -8,11 +8,16 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/ring_buffer.h>
+#include <zephyr/net/net_if.h>
+#include <zephyr/net/net_core.h>
+#include <zephyr/net/net_context.h>
+#include <zephyr/net/net_mgmt.h>
 
 #include "Button.h"
 #include "Led.h"
 #include "Temperature.h"
 #include "Serial.h"
+#include "Network.h"
 
 #define MAIN_THREAD_SLEEP_TIME_MS (100)
 #define RING_BUFFER_SIZE (1024)
@@ -21,6 +26,10 @@ static struct ring_buf ringBuffer;
 static uint8_t buffer[RING_BUFFER_SIZE];
 
 int main(void) {
+  // Local variables used to read data from ring buffer
+  uint8_t rxData[8] = {0};
+  uint8_t length = 0;
+
   // Reference devices from device tree
   const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
   const struct gpio_dt_spec greenLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0});
@@ -29,7 +38,10 @@ int main(void) {
   const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
   const struct device *serialDevice = DEVICE_DT_GET(DT_NODELABEL(usart2));
 
-  // Create objects using the device tree devices
+  // Get the singleton instance of Network
+  Network& network = Network::getInstance();
+
+  // Create local objects using the device tree devices
   Button button(&buttonGpio);
   Led greenLed(&greenLedGpio);
   Led blueLed(&blueLedGpio);
@@ -37,9 +49,7 @@ int main(void) {
   Temperature temperature(temperatureDevice);
   Serial serial(serialDevice);
 
-  uint8_t rxData[8] = {0};
-  uint8_t length = 0;
-
+  // Link buffer buffer to ringBuffer and initialize them
   ring_buf_init(&ringBuffer, sizeof(buffer), buffer);
 
   // Register serial callback as a lambda function
@@ -49,6 +59,14 @@ int main(void) {
 
   // Write a string over serial
   serial.write((uint8_t *)"Hello world!\r\n", (sizeof("Hello world!\r\n") - 1));
+
+  // Set up the lambda callback for IP address notification
+  network.onGotIP([](const char *ipAddress) {
+    printf("Got IP address: %s\r\n", ipAddress);
+  });
+
+  // Start the network and wait for an IP address
+  network.start();
 
   // Continuously check if a button is pressed, if so read temperature and toggle LEDs
   while (true) {

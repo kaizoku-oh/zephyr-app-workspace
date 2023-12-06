@@ -49,8 +49,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 67500  B    | 2   MB      | 3.27%       |
-| RAM           | 15240  B    | 384 KB      | 3.89%       |
+| FLASH         | 68776  B    | 2   MB      | 3.28%       |
+| RAM           | 16328  B    | 384 KB      | 4.15%       |
 | QSPI          | 0      GB   | 256 MB      | 0.00%       |
 | DTCM          | 0      GB   | 128 KB      | 0.00%       |
 | IDT_LIST      | 0      GB   | 2   KB      | 0.00%       |
@@ -61,7 +61,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
-- [ ] Add a script to download ans setup the project (intellisence, structure...)
+- [ ] Add a script to download ans setup the project (intellisence, structurev venv...)
 
 - [ ] Fix vscode launch with cortex-debug
 
@@ -85,7 +85,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add lambda callback to Serial class
 
-- [ ] Add Network manager class
+- [x] Add a simple Network manager class
 
 - [ ] Add Local class for managing local time and geo-location
 
