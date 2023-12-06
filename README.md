@@ -61,7 +61,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
-- [ ] Add a script to download ans setup the project (intellisence, structure...)
+- [ ] Add a script to download ans setup the project (intellisence, structurev venv...)
 
 - [ ] Fix vscode launch with cortex-debug
 
@@ -85,7 +85,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add lambda callback to Serial class
 
-- [ ] Add Network manager class
+- [x] Add a simple Network manager class
 
 - [ ] Add Local class for managing local time and geo-location
 

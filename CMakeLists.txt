@@ -12,5 +12,5 @@ target_sources(app PRIVATE
   src/Led.cpp
   src/Temperature.cpp
   src/Serial.cpp
-  src/CoapClient.cpp
+  src/Network.cpp
 )
