@@ -137,6 +137,7 @@
 				"request": "launch",
 				"type": "cortex-debug",
 				"servertype": "stlink",
+				"stlinkPath": "/opt/st/stm32cubeide_1.14.0/plugins/com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.linux64_2.1.100.202310302101/tools/bin/ST-LINK_gdbserver",
 				"device": "STM32F767ZI",
 				"interface": "swd",
 				"runToEntryPoint": "main",

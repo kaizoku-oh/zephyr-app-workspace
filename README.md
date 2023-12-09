@@ -1,6 +1,6 @@
 # Standalone Zephyr application
 
-[![GitHub Build workflow status](https://github.com/kaizoku-oh/stm32-zephyr-app/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/zephyr-app-workspace/actions/workflows/build.yaml)
+[![GitHub Build workflow status](https://github.com/kaizoku-oh/zephyr-app-workspace/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/zephyr-app-workspace/actions/workflows/build.yaml)
 [![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/releases)
 [![GitHub issues](https://img.shields.io/github/issues/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/issues)
 ![GitHub top language](https://img.shields.io/github/languages/top/kaizoku-oh/zephyr-app-workspace)
@@ -35,15 +35,15 @@ $ code zephyr-windows.code-workspace
 ```
 Once vscode is open you can run your workspace tasks like the following
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
+![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
 
 You can run the tasks in the following order Clean => Build => Erase => Flash
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
+![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
 
 Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
-![image](https://github.com/kaizoku-oh/stm32-zephyr-app/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
+![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
 
 ## 🔨 Build footprint for NUCLEO-F767ZI
 
@@ -61,9 +61,9 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
-- [ ] Add a script to download ans setup the project (intellisence, structurev venv...)
+- [ ] Add a script to download and setup the project (intellisence, structure, venv...)
 
-- [ ] Fix vscode launch with cortex-debug
+- [x] Fix vscode launch with cortex-debug
 
 - [x] Add multithreading code
 
@@ -73,7 +73,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add Github CI workflow
 
-- [ ] Update the README.md Build footprint table automatically when running CI workflow
+- [ ] Update the README.md Build footprint table automatically as a post build
 
 - [x] Add GitHub badges to readme
 
@@ -89,7 +89,9 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add Local class for managing local time and geo-location
 
-- [ ] Add cloud client class
+- [ ] Add HTTP client class
+
+- [ ] Add MQTT client class
 
 - [ ] Add NVS config class
 

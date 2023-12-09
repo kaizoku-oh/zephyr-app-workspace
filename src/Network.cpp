@@ -37,28 +37,20 @@ void Network::onGotIP(std::function<void(const char *)> callback) {
 }
 
 static void netMgmtCallback(struct net_mgmt_event_callback *cb, uint32_t event, struct net_if *iface) {
-  char buffer[NET_IPV4_ADDR_LEN] = {0};
-  char *ipAddress;
+  char ipBuffer[NET_IPV4_ADDR_LEN] = {0};
 
   if (event == NET_EVENT_IPV4_ADDR_ADD) {
     if (iface->config.ip.ipv4->unicast[0].addr_type == NET_ADDR_DHCP) {
-      ipAddress = net_addr_ntop(AF_INET,
-                                &iface->config.ip.ipv4->unicast[0].address.in_addr,
-                                buffer,
-                                sizeof(buffer));
-      printk("Address: %s\r\n", ipAddress);
-      printk("Subnet: %s\r\n", net_addr_ntop(AF_INET,
-                                             &iface->config.ip.ipv4->netmask,
-                                             buffer,
-                                             sizeof(buffer)));
-      printk("Router: %s\r\n", net_addr_ntop(AF_INET,
-                                             &iface->config.ip.ipv4->gw,
-                                             buffer,
-                                             sizeof(buffer)));
-
-      // Notify the callback if it's set
-      if (Network::getInstance().callback) {
-        Network::getInstance().callback(ipAddress);
+      if (net_addr_ntop(AF_INET,
+                        &iface->config.ip.ipv4->unicast[0].address.in_addr,
+                        ipBuffer,
+                        sizeof(ipBuffer))) {
+        // Notify the callback if it's set
+        if (Network::getInstance().callback) {
+          Network::getInstance().callback(ipBuffer);
+        }
+      } else {
+        printk("Error while converting IP address to string form\r\n");
       }
     }
   }
