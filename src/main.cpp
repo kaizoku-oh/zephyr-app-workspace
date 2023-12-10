@@ -19,24 +19,24 @@
 #include "Network.h"
 #include "HttpClient.h"
 
-#define MAIN_THREAD_SLEEP_TIME_MS        (1000)
-#define LED_THREAD_SLEEP_TIME_MS         (500)
-#define TEMPERATURE_THREAD_SLEEP_TIME_MS (1000)
-#define BUTTON_THREAD_SLEEP_TIME_MS      (100)
-#define NETWORK_THREAD_SLEEP_TIME_MS     (1000)
-#define HTTP_CLIENT_THREAD_SLEEP_TIME_MS (2000)
+static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 500;
+static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
+static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t HTTP_CLIENT_THREAD_SLEEP_TIME_MS = 2000;
 
-static void led_thread_handler(void);
-static void temperature_thread_handler(void);
-static void button_thread_handler(void);
-static void network_thread_handler(void);
-static void http_client_thread_handler(void);
+static void ledThreadHandler(void);
+static void temperatureThreadHandler(void);
+static void buttonThreadHandler(void);
+static void networkThreadHandler(void);
+static void httpClientThreadHandler(void);
 
-K_THREAD_DEFINE(led_thread, 512, led_thread_handler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(temperature_thread, 512, temperature_thread_handler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(button_thread, 512, button_thread_handler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(network_thread, 512, network_thread_handler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(http_client_thread, 512, http_client_thread_handler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(temperatureThread, 512, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(buttonThread, 512, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpClientThread, 512, httpClientThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 int main(void) {
   while (true) {
@@ -46,7 +46,7 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 
-static void led_thread_handler(void) {
+static void ledThreadHandler(void) {
   // Reference devices from device tree
   const struct gpio_dt_spec greenLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0});
   const struct gpio_dt_spec blueLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0});
@@ -66,7 +66,7 @@ static void led_thread_handler(void) {
   }
 }
 
-static void temperature_thread_handler(void) {
+static void temperatureThreadHandler(void) {
   // Reference device from device tree
   const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 
@@ -80,7 +80,7 @@ static void temperature_thread_handler(void) {
   }
 }
 
-static void button_thread_handler(void) {
+static void buttonThreadHandler(void) {
   // Reference device from device tree
   const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
 
@@ -96,7 +96,7 @@ static void button_thread_handler(void) {
   }
 }
 
-static void network_thread_handler(void) {
+static void networkThreadHandler(void) {
   // Get the singleton instance of Network
   Network& network = Network::getInstance();
 
@@ -113,9 +113,9 @@ static void network_thread_handler(void) {
   }
 }
 
-static void http_client_thread_handler(void) {
-  // Create a local object for the HTTP client
-  HttpClient client("142.250.180.174", 8080);
+static void httpClientThreadHandler(void) {
+  // Create an HTTP client as a local object
+  HttpClient client("142.250.180.174", 80);
 
   // Send a GET request and response in the lambda callback
   client.get("/", [](uint8_t *data, uint32_t length) {
