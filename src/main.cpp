@@ -17,22 +17,26 @@
 #include "Temperature.h"
 #include "Serial.h"
 #include "Network.h"
+#include "HttpClient.h"
 
 #define MAIN_THREAD_SLEEP_TIME_MS        (1000)
 #define LED_THREAD_SLEEP_TIME_MS         (500)
 #define TEMPERATURE_THREAD_SLEEP_TIME_MS (1000)
 #define BUTTON_THREAD_SLEEP_TIME_MS      (100)
 #define NETWORK_THREAD_SLEEP_TIME_MS     (1000)
+#define HTTP_CLIENT_THREAD_SLEEP_TIME_MS (2000)
 
 static void led_thread_handler(void);
 static void temperature_thread_handler(void);
 static void button_thread_handler(void);
 static void network_thread_handler(void);
+static void http_client_thread_handler(void);
 
 K_THREAD_DEFINE(led_thread, 512, led_thread_handler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperature_thread, 512, temperature_thread_handler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(button_thread, 512, button_thread_handler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(network_thread, 512, network_thread_handler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(http_client_thread, 512, http_client_thread_handler, NULL, NULL, NULL, 7, 0, 0);
 
 int main(void) {
   while (true) {
@@ -106,5 +110,19 @@ static void network_thread_handler(void) {
 
   while (true) {
     k_msleep(NETWORK_THREAD_SLEEP_TIME_MS);
+  }
+}
+
+static void http_client_thread_handler(void) {
+  // Create a local object for the HTTP client
+  HttpClient client("142.250.180.174", 8080);
+
+  // Send a GET request and response in the lambda callback
+  client.get("/", [](uint8_t *data, uint32_t length) {
+    printk("Received response: %.*s\r\n", length, data);
+  });
+
+  while (true) {
+    k_msleep(HTTP_CLIENT_THREAD_SLEEP_TIME_MS);
   }
 }

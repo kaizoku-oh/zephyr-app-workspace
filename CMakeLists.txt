@@ -13,4 +13,5 @@ target_sources(app PRIVATE
   src/Temperature.cpp
   src/Serial.cpp
   src/Network.cpp
+  src/HttpClient.cpp
 )
