@@ -11,6 +11,7 @@
 #include <zephyr/net/net_core.h>
 #include <zephyr/net/net_context.h>
 #include <zephyr/net/net_mgmt.h>
+#include <zephyr/smf.h>
 
 #include "Button.h"
 #include "Led.h"
@@ -18,6 +19,20 @@
 #include "Serial.h"
 #include "Network.h"
 #include "HttpClient.h"
+
+typedef enum {
+  STATE_DISCONNECTED = 0,
+  STATE_CONNECTED,
+  STATE_MAX
+} smf_state_t;
+
+typedef struct {
+  struct smf_ctx ctx;
+  struct k_event smfEvent;
+  uint32_t events;
+} smf_object_t;
+
+static constexpr uint32_t EVENT_GOT_IP = BIT(0);
 
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 500;
@@ -32,14 +47,35 @@ static void buttonThreadHandler(void);
 static void networkThreadHandler(void);
 static void httpClientThreadHandler(void);
 
+static void stateDisconnectedEntry(void *object);
+static void stateDisconnectedRun(void *object);
+
+static void stateConnectedEntry(void *object);
+static void stateConnectedRun(void *object);
+
+static const struct smf_state states[] = {
+  [STATE_DISCONNECTED] = SMF_CREATE_STATE(stateDisconnectedEntry, stateDisconnectedRun),
+  [STATE_CONNECTED] = SMF_CREATE_STATE(stateConnectedEntry, stateConnectedRun),
+};
+
 K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 512, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 512, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(httpClientThread, 512, httpClientThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
+static smf_object_t smfObject = {0};
+
 int main(void) {
+  k_event_init(&smfObject.smfEvent);
+
+  smf_set_initial(SMF_CTX(&smfObject), &states[STATE_DISCONNECTED]);
+
   while (true) {
+    smfObject.events = k_event_wait(&smfObject.smfEvent, EVENT_GOT_IP, true, K_FOREVER);
+
+    smf_run_state(SMF_CTX(&smfObject));
+
     k_msleep(MAIN_THREAD_SLEEP_TIME_MS);
   }
 
@@ -103,6 +139,7 @@ static void networkThreadHandler(void) {
   // Set up the lambda callback for IP address notification
   network.onGotIP([](const char *ipAddress) {
     printf("Got IP address: %s\r\n", ipAddress);
+    k_event_post(&smfObject.smfEvent, EVENT_GOT_IP);
   });
 
   // Start the network and wait for an IP address
