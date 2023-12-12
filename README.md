@@ -89,7 +89,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add a usage of the active objects pattern
 
-- [ ] Add a usage of a state machine using SMF
+- [ ] Add a usage of an event driven state machine using the SMF OS service and the Event kernel object
 
 - [ ] Add Local class for managing local time and geo-location
 
