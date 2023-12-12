@@ -87,6 +87,10 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add a simple Network manager class
 
+- [ ] Add a usage of the active objects pattern
+
+- [ ] Add a usage of a state machine using SMF
+
 - [ ] Add Local class for managing local time and geo-location
 
 - [ ] Add HTTP client class
