@@ -93,6 +93,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add MQTT client class
 
+- [ ] Add TCP class
+
 - [ ] Add NVS config class
 
 - [ ] Add an out-of-tree driver

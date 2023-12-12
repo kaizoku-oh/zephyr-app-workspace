@@ -117,7 +117,7 @@ static void httpClientThreadHandler(void) {
   // Create an HTTP client as a local object
   HttpClient client("142.250.180.174", 80);
 
-  // Send a GET request and response in the lambda callback
+  // Send a GET request and read response in the lambda callback
   client.get("/", [](uint8_t *data, uint32_t length) {
     printk("Received response: %.*s\r\n", length, data);
   });

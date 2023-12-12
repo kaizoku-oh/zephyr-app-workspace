@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <functional>
 
-#define HTTP_CLIENT_RESPONSE_BUFFER_SIZE (512)
+#include <zephyr/net/net_ip.h>
+
+static constexpr uint32_t HTTP_CLIENT_RESPONSE_BUFFER_SIZE = 512;
 
 class HttpClient {
 
