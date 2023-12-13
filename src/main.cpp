@@ -41,6 +41,8 @@ static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t HTTP_CLIENT_THREAD_SLEEP_TIME_MS = 2000;
 
+static constexpr uint32_t EVENT_GOT_IP  = BIT(0);
+
 static void ledThreadHandler(void);
 static void temperatureThreadHandler(void);
 static void buttonThreadHandler(void);
