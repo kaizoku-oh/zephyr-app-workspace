@@ -75,6 +75,10 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
+- [ ] Add debouncing mechanism to Button class
+
+- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+
 - [x] Add GitHub badges to readme
 
 - [ ] Add OTA update example

@@ -26,7 +26,7 @@ typedef enum {
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 500;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 1000;
-static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
+static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
 
 static void ledThreadHandler(void);
@@ -61,6 +61,8 @@ static void ledThreadHandler(void) {
   Led redLed(&redLedGpio);
 
   // Continuously toggle LEDs
+  greenLed.toggle();
+  redLed.toggle();
   while (true) {
     greenLed.toggle();
     blueLed.toggle();
@@ -70,6 +72,7 @@ static void ledThreadHandler(void) {
 }
 
 static void temperatureThreadHandler(void) {
+  // Local variable to hold the received event on the queue
   event_t event;
 
   // Reference device from device tree
@@ -79,9 +82,15 @@ static void temperatureThreadHandler(void) {
   Temperature temperature(temperatureDevice);
 
   printk("Waiting for EVENT_NETWORK_AVAILABLE event...\r\n");
+
+  // Wait here forever for an event
   k_msgq_get(&queue, &event, K_FOREVER);
+
+  // Check if we got the right event
   if (event == EVENT_NETWORK_AVAILABLE) {
     printk("Received EVENT_NETWORK_AVAILABLE event\r\n");
+  } else {
+    printk("Received a wrong event (%u)\r\n", event);
   }
 
   // Continuously read temperature
