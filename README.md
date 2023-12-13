@@ -73,7 +73,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add Github CI workflow
 
-- [ ] Update the README.md Build footprint table automatically as a post build
+- [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
 - [x] Add GitHub badges to readme
 
