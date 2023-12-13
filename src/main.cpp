@@ -11,6 +11,7 @@
 #include <zephyr/net/net_core.h>
 #include <zephyr/net/net_context.h>
 #include <zephyr/net/net_mgmt.h>
+#include <zephyr/smf.h>
 
 #include "Button.h"
 #include "Led.h"
@@ -26,6 +27,8 @@ static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t HTTP_CLIENT_THREAD_SLEEP_TIME_MS = 2000;
 
+static constexpr uint32_t EVENT_GOT_IP  = BIT(0);
+
 static void ledThreadHandler(void);
 static void temperatureThreadHandler(void);
 static void buttonThreadHandler(void);
@@ -38,8 +41,70 @@ K_THREAD_DEFINE(buttonThread, 512, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 
 K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(httpClientThread, 512, httpClientThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
+enum demo_state { S0, S1 };
+
+struct s_object {
+  /* This must be first */
+  struct smf_ctx ctx;
+
+  /* Events */
+  struct k_event smf_event;
+  int32_t events;
+
+  /* Other state specific data add here */
+} s_obj;
+
+/* State S0 */
+static void s0_entry(void *o)
+{
+  printk("STATE0\n");
+}
+
+static void s0_run(void *o)
+{
+  struct s_object *s = (struct s_object *)o;
+
+  /* Change states on Button Press Event */
+  if (s->events & EVENT_GOT_IP) {
+    smf_set_state(SMF_CTX(&s_obj), &demo_states[S1]);
+  }
+}
+
+/* State S1 */
+static void s1_entry(void *o)
+{
+  printk("STATE1\n");
+}
+
+static void s1_run(void *o)
+{
+  struct s_object *s = (struct s_object *)o;
+
+  /* Change states on Button Press Event */
+  if (s->events & EVENT_GOT_IP) {
+    smf_set_state(SMF_CTX(&s_obj), &demo_states[S0]);
+  }
+}
+
+static const struct smf_state demo_states[] = {
+  [S0] = SMF_CREATE_STATE(s0_entry, s0_run, NULL),
+  [S1] = SMF_CREATE_STATE(s1_entry, s1_run, NULL),
+};
+
 int main(void) {
+  /* Initialize the event */
+  k_event_init(&s_obj.smf_event);
+
+  /* Set initial state */
+  smf_set_initial(SMF_CTX(&s_obj), &demo_states[S0]);
+
   while (true) {
+    /* Block until an event is detected */
+    s_obj.events = k_event_wait(&s_obj.smf_event, EVENT_GOT_IP, true, K_FOREVER);
+
+    /* State machine terminates if a non-zero value is returned */
+    ret = smf_run_state(SMF_CTX(&s_obj));
+
     k_msleep(MAIN_THREAD_SLEEP_TIME_MS);
   }
 
