@@ -63,6 +63,16 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add a script to download and setup the project (intellisence, structure, venv...)
 
+- [ ] Add static code analysis with CodeChecker
+
+- [ ] Add coverage testing with gcov
+
+- [ ] Add unit tests using Ztest and run them using Twister
+
+- [ ] Add integration tests
+
+- [ ] Add HIL tests using GitHub local runner
+
 - [x] Fix vscode launch with cortex-debug
 
 - [x] Add multithreading code
