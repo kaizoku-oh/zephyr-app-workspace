@@ -61,6 +61,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
+- [ ] Build project with MCUBoot
+
 - [ ] Add a script to download and setup the project (intellisence, structure, venv...)
 
 - [ ] Add static code analysis with CodeChecker

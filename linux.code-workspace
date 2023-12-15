@@ -68,11 +68,12 @@
 			{
 				"label": "Erase",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "STM32_Programmer_CLI",
 				"args": [
-					"flash",
-					"--erase",
-					"${workspaceFolder}/app/build",
+					"--connect",
+					"port=swd",
+					"-e",
+					"all"
 				],
 				"problemMatcher": [
 					"$gcc"
