@@ -13,6 +13,7 @@
 #include "Temperature.h"
 #include "Serial.h"
 #include "Network.h"
+#include "HttpClient.h"
 #include "Storage.h"
 
 typedef enum {
@@ -25,18 +26,21 @@ static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t HTTP_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t STORAGE_THREAD_SLEEP_TIME_MS = 1000;
 
 static void ledThreadHandler(void);
 static void temperatureThreadHandler(void);
 static void buttonThreadHandler(void);
 static void networkThreadHandler(void);
+static void httpClientThreadHandler(void);
 static void storageThreadHandler(void);
 
 K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpClientThread, 1024, httpClientThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 K_MSGQ_DEFINE(queue, sizeof(event_t), 8, 1);
@@ -130,6 +134,20 @@ static void networkThreadHandler(void) {
 
   // Start the network and wait for an IP address
   network.start();
+
+  while (true) {
+    k_msleep(NETWORK_THREAD_SLEEP_TIME_MS);
+  }
+}
+
+static void httpClientThreadHandler(void) {
+  // Create local object using the device tree device
+  HttpClient client((char *)"142.251.143.132", 80);
+
+  // Send GET request and handle response in a lambda callback
+  client.get("/", [](uint8_t *response, uint32_t length) {
+    printk("Response[%d]: %.*s\r\n", length, length, response);
+  });
 
   while (true) {
     k_msleep(NETWORK_THREAD_SLEEP_TIME_MS);
