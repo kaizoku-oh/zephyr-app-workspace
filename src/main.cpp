@@ -156,7 +156,7 @@ static void httpClientThreadHandler(void) {
 
 static void storageThreadHandler(void) {
   int ret = 0;
-  uint8_t buffer[16] = {0};
+  uint8_t buffer[sizeof("xxx.xxx.xxx.xxx")] = {0};
 
   const uint16_t IP_ADDRESS_ID = 1;
 

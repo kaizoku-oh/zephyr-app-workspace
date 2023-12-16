@@ -49,8 +49,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 154500 B    | 768 KB      | 19.65%      |
-| RAM           | 52392  B    | 384 KB      | 13.32%      |
+| FLASH         | 186708 B    | 768 KB      | 23.74%      |
+| RAM           | 58824  B    | 384 KB      | 14.96%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
