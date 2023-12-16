@@ -7,18 +7,13 @@
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/drivers/flash.h>
-#include <zephyr/storage/flash_map.h>
-#include <zephyr/fs/nvs.h>
 
 #include "Button.h"
 #include "Led.h"
 #include "Temperature.h"
 #include "Serial.h"
 #include "Network.h"
-
-#define NVS_PARTITION_DEVICE FIXED_PARTITION_DEVICE(storage_partition)
-#define NVS_PARTITION_OFFSET FIXED_PARTITION_OFFSET(storage_partition)
+#include "Storage.h"
 
 typedef enum {
   EVENT_NETWORK_AVAILABLE = 0,
@@ -42,7 +37,7 @@ K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(storageThread, 4*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 K_MSGQ_DEFINE(queue, sizeof(event_t), 8, 1);
 
@@ -144,47 +139,26 @@ static void networkThreadHandler(void) {
 static void storageThreadHandler(void) {
   int ret = 0;
   uint8_t buffer[16] = {0};
-  struct nvs_fs fs = {0};
-  struct flash_pages_info pageInfo = {0};
+
   const uint16_t IP_ADDRESS_ID = 1;
 
-  // Verify that the device been successfully initialized
-  fs.flash_device = NVS_PARTITION_DEVICE;
-  ret = device_is_ready(fs.flash_device);
-  if (ret == 0) {
-    printk("Flash device %s is not ready\r\n", fs.flash_device->name);
-    return;
-  }
+  // Get the Storage instance
+  Storage& storage = Storage::getInstance();
 
-  // Get the size and start offset of flash page at certain flash offset
-  fs.offset = NVS_PARTITION_OFFSET;
-  ret = flash_get_page_info_by_offs(fs.flash_device, fs.offset, &pageInfo);
-  if (ret != 0) {
-    printk("Unable to get page inf>>o\r\n");
-    return;
-  }
-
-  // Mount an NVS file system onto the flash device
-  fs.sector_size = pageInfo.size;
-  fs.sector_count = 2U;
-  ret = nvs_mount(&fs);
-  if (ret != 0) {
-    printk("Flash Init failed -(%d)\r\n", ret);
-    return;
-  }
-
-  // Read an entry by its id from the NVS file system
-  printk("Reading NVS looking for IP_ADDRESS_ID...\r\n");
-  ret = nvs_read(&fs, IP_ADDRESS_ID, &buffer, sizeof(buffer));
+  // Write data to NVS
+  ret = storage.write(IP_ADDRESS_ID, (uint8_t *)"192.168.1.2", sizeof("192.168.1.2")-1);
   if (ret > 0) {
-    printk("Found it!\r\n");
-    printk("Id: %d, Address: %s\r\n", IP_ADDRESS_ID, buffer);
+    printk("Data written successfully to NVS!\r\n");
   } else {
-    printk("IP address not found in NVS!\r\n");
-    memcpy(buffer, "192.168.1.2", sizeof("192.168.1.2")-1);
-    printk("Saving IP address: %s at id %d to NVS\r\n", buffer, IP_ADDRESS_ID);
-    // Write an entry by its id to the NVS file system
-    nvs_write(&fs, IP_ADDRESS_ID, &buffer, sizeof(buffer));
+    printk("Failed to write data to NVS\r\n");
+  }
+
+  // Read data from NVS
+  ret = storage.read(IP_ADDRESS_ID, buffer, sizeof(buffer));
+  if (ret > 0) {
+    printk("Data read successfully from NVS: %.*s\r\n", ret, buffer);
+  } else {
+    printk("Failed to read data from NVS\r\n");
   }
 
   while (true) {

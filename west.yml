@@ -19,6 +19,7 @@ manifest:
           - cmsis
           - hal_stm32
           - mcuboot
+          - mbedtls
 
   self:
     path: app

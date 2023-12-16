@@ -49,8 +49,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 149460 B    | 2   MB      | 7.13%       |
-| RAM           | 42592  B    | 384 KB      | 10.83%      |
+| FLASH         | 154500 B    | 768 KB      | 19.65%      |
+| RAM           | 52392  B    | 384 KB      | 13.32%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
@@ -62,6 +62,10 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 - [x] Shell over UART
 
 - [ ] Build project with MCUBoot
+
+- [ ] Solve the Shared Callback Registration problem in the Network class
+
+- [ ] Add native simulator to vscode build task
 
 - [ ] Add a script to download and setup the project (intellisence, structure, venv...)
 
@@ -115,7 +119,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add TCP class
 
-- [ ] Add NVS config class
+- [x] Add NVS Storage class
 
 - [ ] Add an out-of-tree driver
 
