@@ -61,13 +61,31 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Shell over UART
 
+- [x] Fix vscode launch with cortex-debug
+
+- [x] Add multithreading code
+
+- [x] Add die temp sensor class
+
+- [x] Add Github CI workflow
+
+- [x] Add GitHub badges to readme
+
+- [x] Enable C++20
+
+- [x] Add lambda callback to Serial class
+
+- [x] Add a simple Network manager class
+
+- [x] Add NVS Storage class
+
 - [ ] Build project with MCUBoot
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
 
 - [ ] Add native simulator to vscode build task
 
-- [ ] Add a script to download and setup the project (intellisence, structure, venv...)
+- [ ] Add a script to download and setup the project (intellisense, structure, venv...)
 
 - [ ] Add static code analysis with CodeChecker
 
@@ -79,15 +97,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add HIL tests using GitHub local runner
 
-- [x] Fix vscode launch with cortex-debug
-
-- [x] Add multithreading code
-
 - [ ] Add application events manager
-
-- [x] Add die temp sensor class
-
-- [x] Add Github CI workflow
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
@@ -95,17 +105,9 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
 
-- [x] Add GitHub badges to readme
-
 - [ ] Add OTA update example
 
-- [x] Enable C++20
-
 - [ ] Add lambda callback to Button class
-
-- [x] Add lambda callback to Serial class
-
-- [x] Add a simple Network manager class
 
 - [ ] Use the active object design pattern
 
@@ -118,8 +120,6 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 - [ ] Add MQTT client class
 
 - [ ] Add TCP class
-
-- [x] Add NVS Storage class
 
 - [ ] Add an out-of-tree driver
 

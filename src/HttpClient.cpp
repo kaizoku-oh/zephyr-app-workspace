@@ -10,23 +10,20 @@ static void httpResponseCallback(struct http_response *response,
                                  enum http_final_call finalData,
                                  void *userData);
 
-HttpClient::HttpClient(const char *server, const uint16_t port) {
-  int ret = 0;
-  socklen_t length = 0;
-
+HttpClient::HttpClient(char *server, uint16_t port) {
   // 1. Initialize attributes
-  this->socket = 0;
+  this->sock = 0;
   this->server = server;
   this->port = port;
-  memset(this->socketAddress, 0, sizeof(this->socketAddress));
+  memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
 
   // 2. Create socket
-  net_sin(this->socketAddress)->sin_family = AF_INET;
-  net_sin(this->socketAddress)->sin_port = htons(port);
-  inet_pton(AF_INET, server, &net_sin(this->socketAddress)->sin_addr);
-  this->socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  net_sin(&this->socketAddress)->sin_family = AF_INET;
+  net_sin(&this->socketAddress)->sin_port = htons(port);
+  inet_pton(AF_INET, server, &net_sin(&this->socketAddress)->sin_addr);
+  this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-  if (*this->socket < 0) {
+  if (this->sock < 0) {
     printk("Failed to create HTTP socket (%d)\r\n", -errno);
   }
 }
@@ -48,7 +45,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   this->callback = callback;
 
   // 1. Open TCP connection
-  ret = connect(this->socket, this->socketAddress, sizeof(this->socketAddress));
+  ret = connect(this->sock, &this->socketAddress, sizeof(this->socketAddress));
   if (ret < 0) {
     printk("Cannot connect to remote (%d)", -errno);
     ret = -errno;
@@ -63,7 +60,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   request.response = httpResponseCallback;
   request.recv_buf = this->httpResponseBuffer;
   request.recv_buf_len = sizeof(this->httpResponseBuffer);
-  ret = http_client_req(this->socket, &request, 3000, (void *)this->callback);
+  ret = http_client_req(this->sock, &request, 3000, (void *)&this->callback);
   if (ret < 0) {
     printk("Error sending GET request\r\n");
     ret = -errno;
@@ -71,7 +68,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   }
 
   // 3. Close TCP connection
-  close(this->socket);
+  close(this->sock);
 
   return ret;
 }

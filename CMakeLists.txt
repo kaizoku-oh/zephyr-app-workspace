@@ -14,4 +14,5 @@ target_sources(app PRIVATE
   src/Serial.cpp
   src/Network.cpp
   src/Storage.cpp
+  src/HttpClient.cpp
 )
