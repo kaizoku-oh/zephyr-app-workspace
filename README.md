@@ -79,6 +79,14 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add NVS Storage class
 
+- [x] Add HTTP client class
+
+- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+
+- [ ] Run app in Renode
+
+- [ ] Integrate Renode + robot in the CI workflow
+
 - [ ] Build project with MCUBoot
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
@@ -103,8 +111,6 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add debouncing mechanism to Button class
 
-- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
-
 - [ ] Add OTA update example
 
 - [ ] Add lambda callback to Button class
@@ -114,8 +120,6 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 - [ ] Use an event driven state machine using the SMF OS service and the message queue kernel object
 
 - [ ] Add Local class for managing local time and geo-location
-
-- [ ] Add HTTP client class
 
 - [ ] Add MQTT client class
 
