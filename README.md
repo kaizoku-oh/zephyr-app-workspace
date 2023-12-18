@@ -109,7 +109,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add HIL tests using GitHub local runner
 
-- [ ] Add application events manager
+- [ ] Add application events manager using zbus
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
