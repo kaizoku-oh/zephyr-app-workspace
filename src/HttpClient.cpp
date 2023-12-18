@@ -117,7 +117,7 @@ int HttpClient::post(const char *endpoint,
   request.payload_len = length;
   request.recv_buf = this->httpResponseBuffer;
   request.recv_buf_len = sizeof(this->httpResponseBuffer);
-  ret = http_client_req(this->sock, &request, 5000, (void *)&this->callback);
+  ret = http_client_req(this->sock, &request, 5000, (void *)this);
   if (ret < 0) {
     printk("Error sending POST request\r\n");
     ret = -errno;
