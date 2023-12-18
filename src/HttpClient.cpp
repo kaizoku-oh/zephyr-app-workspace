@@ -15,17 +15,6 @@ HttpClient::HttpClient(char *server, uint16_t port) {
   this->sock = 0;
   this->server = server;
   this->port = port;
-  memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
-
-  // 2. Create socket
-  net_sin(&this->socketAddress)->sin_family = AF_INET;
-  net_sin(&this->socketAddress)->sin_port = htons(port);
-  inet_pton(AF_INET, server, &net_sin(&this->socketAddress)->sin_addr);
-  this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-  if (this->sock < 0) {
-    printk("Failed to create HTTP socket (%d)\r\n", -errno);
-  }
 }
 
 HttpClient::~HttpClient() {
@@ -35,6 +24,17 @@ HttpClient::~HttpClient() {
 int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t)> callback) {
   int ret = 0;
   struct http_request request = {0};
+
+  // 0. Create socket
+  memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
+  net_sin(&this->socketAddress)->sin_family = AF_INET;
+  net_sin(&this->socketAddress)->sin_port = htons(port);
+  inet_pton(AF_INET, server, &net_sin(&this->socketAddress)->sin_addr);
+  this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  if (this->sock < 0) {
+    printk("Failed to create HTTP socket (%d)\r\n", -errno);
+  }
 
   if (callback == nullptr) {
     printk("Failed to register callback\r\n");
@@ -63,6 +63,63 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   ret = http_client_req(this->sock, &request, 5000, (void *)&this->callback);
   if (ret < 0) {
     printk("Error sending GET request\r\n");
+    ret = -errno;
+    return ret;
+  }
+
+  // 3. Close TCP connection
+  close(this->sock);
+
+  return ret;
+}
+
+int HttpClient::post(const char *endpoint,
+                     const char *data,
+                     uint32_t length,
+                     std::function<void(uint8_t *, uint32_t)> callback) {
+  int ret = 0;
+  struct http_request request = {0};
+
+  // 0. Create socket
+  memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
+  net_sin(&this->socketAddress)->sin_family = AF_INET;
+  net_sin(&this->socketAddress)->sin_port = htons(port);
+  inet_pton(AF_INET, server, &net_sin(&this->socketAddress)->sin_addr);
+  this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  if (this->sock < 0) {
+    printk("Failed to create HTTP socket (%d)\r\n", -errno);
+  }
+
+  if (callback == nullptr) {
+    printk("Failed to register callback\r\n");
+    ret = -errno;
+    return ret;
+  }
+
+  this->callback = callback;
+
+  // 1. Open TCP connection
+  ret = connect(this->sock, &this->socketAddress, sizeof(this->socketAddress));
+  if (ret < 0) {
+    printk("Cannot connect to remote (%d)", -errno);
+    ret = -errno;
+    return ret;
+  }
+
+  // 2. Send POST request
+  request.method = HTTP_POST;
+  request.host = this->server;
+  request.url = endpoint;
+  request.protocol = "HTTP/1.1";
+  request.response = httpResponseCallback;
+  request.payload = data;
+  request.payload_len = length;
+  request.recv_buf = this->httpResponseBuffer;
+  request.recv_buf_len = sizeof(this->httpResponseBuffer);
+  ret = http_client_req(this->sock, &request, 5000, (void *)&this->callback);
+  if (ret < 0) {
+    printk("Error sending POST request\r\n");
     ret = -errno;
     return ret;
   }

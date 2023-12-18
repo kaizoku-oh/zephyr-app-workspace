@@ -26,21 +26,24 @@ static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 5000;
 static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
-static constexpr uint32_t HTTP_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
+static constexpr uint32_t HTTP_POST_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t STORAGE_THREAD_SLEEP_TIME_MS = 1000;
 
 static void ledThreadHandler(void);
 static void temperatureThreadHandler(void);
 static void buttonThreadHandler(void);
 static void networkThreadHandler(void);
-static void httpClientThreadHandler(void);
+static void httpGetRequestThreadHandler(void);
+static void httpPostRequestThreadHandler(void);
 static void storageThreadHandler(void);
 
 K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(httpClientThread, 2*1024, httpClientThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpGetRequestThread, 3*1024, httpGetRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpPostRequestThread, 3*1024, httpPostRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 K_MSGQ_DEFINE(queue, sizeof(event_t), 8, 1);
@@ -115,6 +118,7 @@ static void networkThreadHandler(void) {
 
     printf("Got IP address: %s\r\n", ipAddress);
     k_msgq_put(&queue, &event, K_NO_WAIT);
+    k_msgq_put(&queue, &event, K_NO_WAIT);
   });
 
   // Start the network and wait for an IP address
@@ -125,7 +129,7 @@ static void networkThreadHandler(void) {
   }
 }
 
-static void httpClientThreadHandler(void) {
+static void httpGetRequestThreadHandler(void) {
   // Local variable to hold the received event on the queue
   event_t event;
 
@@ -142,10 +146,10 @@ static void httpClientThreadHandler(void) {
   }
 
   // Create an HTTP client as a local object
-  HttpClient client((char *)"192.168.43.145", 80);
+  HttpClient client((char *)"192.168.43.145", 1880);
 
   // Send GET request and handle response in a lambda callback
-  client.get("/data.json", [](uint8_t *response, uint32_t length) {
+  client.get("/data", [](uint8_t *response, uint32_t length) {
     size_t index = 0;
 
     // Skip headers by looking for the start of the json message
@@ -154,11 +158,50 @@ static void httpClientThreadHandler(void) {
         break;
       }
     }
-    printk("\r\nResponse(%d bytes): %.*s\r\n", length-index-1, length-index-1, &response[index]);
+    printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
   });
 
   while (true) {
-    k_msleep(NETWORK_THREAD_SLEEP_TIME_MS);
+    k_msleep(HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS);
+  }
+}
+
+static void httpPostRequestThreadHandler(void) {
+  // Local variable to hold the received event on the queue
+  event_t event;
+
+  printk("Waiting for EVENT_NETWORK_AVAILABLE event...\r\n");
+
+  // Wait here forever for an event
+  k_msgq_get(&queue, &event, K_FOREVER);
+
+  // Check if we got the right event
+  if (event == EVENT_NETWORK_AVAILABLE) {
+    printk("Received EVENT_NETWORK_AVAILABLE event\r\n");
+  } else {
+    printk("Received a wrong event (%u)\r\n", event);
+  }
+
+  // Create an HTTP client as a local object
+  HttpClient client((char *)"192.168.43.145", 1880);
+
+  // Send POST request and handle response in a lambda callback
+  client.post("/data", "{\"temperature\": 20.6}",
+              sizeof("{\"temperature\": 20.6}")-1,
+              [](uint8_t *response, uint32_t length) {
+    size_t index = 0;
+
+    // Skip headers by looking for the start of the json response
+    for (index = 0; index < length; index++) {
+      if (response[index] == '{') {
+        break;
+      }
+    }
+    printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
+  });
+
+  while (true) {
+    k_msleep(HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS);
   }
 }
 

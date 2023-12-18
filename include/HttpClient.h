@@ -6,7 +6,7 @@
 
 #include <zephyr/net/net_ip.h>
 
-static constexpr uint32_t HTTP_CLIENT_RESPONSE_BUFFER_SIZE = 1024;
+static constexpr uint32_t HTTP_CLIENT_RESPONSE_BUFFER_SIZE = 512;
 
 class HttpClient {
 
@@ -16,6 +16,10 @@ public:
   HttpClient(char *server, uint16_t port);
   ~HttpClient();
   int get(const char *endpoint, std::function<void(uint8_t *, uint32_t)> callback);
+  int post(const char *endpoint,
+           const char *data,
+           uint32_t length,
+           std::function<void(uint8_t *, uint32_t)> callback);
 
 private:
   int sock;
