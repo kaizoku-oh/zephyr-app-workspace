@@ -60,7 +60,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   request.response = httpResponseCallback;
   request.recv_buf = this->httpResponseBuffer;
   request.recv_buf_len = sizeof(this->httpResponseBuffer);
-  ret = http_client_req(this->sock, &request, 3000, (void *)&this->callback);
+  ret = http_client_req(this->sock, &request, 5000, (void *)&this->callback);
   if (ret < 0) {
     printk("Error sending GET request\r\n");
     ret = -errno;

@@ -85,6 +85,10 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Run app in Renode
 
+- [ ] Add configurable vscode tasks
+
+- [ ] Add vscode dev container environment
+
 - [ ] Integrate Renode + robot in the CI workflow
 
 - [ ] Build project with MCUBoot
