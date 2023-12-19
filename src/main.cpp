@@ -28,10 +28,6 @@ typedef struct {
   event_id_t id;
 } event_t;
 
-typedef struct {
-  double value;
-} sensor_t;
-
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 5000;
@@ -47,7 +43,8 @@ static void httpGetRequestThreadHandler(void);
 static void httpPostRequestThreadHandler(void);
 static void storageThreadHandler(void);
 
-static void sensorsDataListenerCallback(const struct zbus_channel *channel);
+static void triggerTimerHandler(struct k_timer *timer);
+
 static void eventsListenerCallback(const struct zbus_channel *channel);
 
 K_THREAD_DEFINE(ledThread, 1024, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
@@ -58,14 +55,14 @@ K_THREAD_DEFINE(httpGetRequestThread, 3*1024, httpGetRequestThreadHandler, NULL,
 K_THREAD_DEFINE(httpPostRequestThread, 3*1024, httpPostRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
-ZBUS_CHAN_DEFINE(
-  sensors_channel,                  /* Channel name */
-  sensor_t,                         /* Message type */
-  NULL,                             /* Validator function */
-  NULL,                             /* User data */
-  ZBUS_OBSERVERS(sensors_listener), /* Observers list */
-  ZBUS_MSG_INIT(.value = 0)         /* Message initialization */
-);
+K_TIMER_DEFINE(trigger_timer, triggerTimerHandler, NULL);
+
+ZBUS_LISTENER_DEFINE(events_listener, eventsListenerCallback);
+
+ZBUS_SUBSCRIBER_DEFINE(http_get_request_subscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(http_post_request_subscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(led_subscriber, 4);
+
 ZBUS_CHAN_DEFINE(
   events_channel,                          /* Channel name */
   event_t,                                 /* Message type */
@@ -74,20 +71,16 @@ ZBUS_CHAN_DEFINE(
   ZBUS_OBSERVERS(
     events_listener,
     http_get_request_subscriber,
-    http_post_request_subscriber,
-    led_subscriber
-  ),                                       /* Observers list */
+    http_post_request_subscriber
+  ),                                       /* Initial observers list */
   ZBUS_MSG_INIT(.id = EVENT_INITIAL_VALUE) /* Message initialization */
 );
 
-ZBUS_LISTENER_DEFINE(sensors_listener, sensorsDataListenerCallback);
-ZBUS_LISTENER_DEFINE(events_listener, eventsListenerCallback);
-
-ZBUS_SUBSCRIBER_DEFINE(http_get_request_subscriber, 4);
-ZBUS_SUBSCRIBER_DEFINE(http_post_request_subscriber, 4);
-ZBUS_SUBSCRIBER_DEFINE(led_subscriber, 4);
+ZBUS_CHAN_ADD_OBS(events_channel, led_subscriber, 4);
 
 int main(void) {
+  k_timer_start(&trigger_timer, K_SECONDS(10), K_SECONDS(10));
+
   while (true) {
     k_msleep(MAIN_THREAD_SLEEP_TIME_MS);
   }
@@ -148,7 +141,6 @@ static void temperatureThreadHandler(void) {
   while (true) {
     // Publish temperature value to the zbus
     temperatureReading = temperature.read();
-    zbus_chan_pub(&sensors_channel, &temperatureReading, K_MSEC(200));
     k_msleep(TEMPERATURE_THREAD_SLEEP_TIME_MS);
   }
 }
@@ -298,14 +290,12 @@ static void storageThreadHandler(void) {
   }
 }
 
-static void sensorsDataListenerCallback(const struct zbus_channel *channel) {
-  const sensor_t *data = (sensor_t *)zbus_chan_const_msg(channel);
-
-  printk("Listener <%s> received %.1f on <%s>\r\n", sensors_listener.name, data->value, channel->name);
-}
-
 static void eventsListenerCallback(const struct zbus_channel *channel) {
   const event_t *event = (event_t *)zbus_chan_const_msg(channel);
 
   printk("Listener <%s> received %d on <%s>\r\n", events_listener.name, event->id, channel->name);
+}
+
+static void triggerTimerHandler(struct k_timer *timer) {
+  printk("Timer is triggered\r\n");
 }
