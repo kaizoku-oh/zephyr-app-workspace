@@ -7,6 +7,7 @@
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/zbus/zbus.h>
 
 #include "Button.h"
 #include "Led.h"
@@ -17,17 +18,25 @@
 #include "Storage.h"
 
 typedef enum {
-  EVENT_NETWORK_AVAILABLE = 0,
+  EVENT_INITIAL_VALUE = 0,
+  EVENT_NETWORK_AVAILABLE,
+  EVENT_BUTTON_PRESSED,
   EVENT_MAX
+} event_id_t;
+
+typedef struct {
+  event_id_t id;
 } event_t;
+
+typedef struct {
+  double value;
+} sensor_t;
 
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 5000;
 static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
-static constexpr uint32_t HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
-static constexpr uint32_t HTTP_POST_CLIENT_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t STORAGE_THREAD_SLEEP_TIME_MS = 1000;
 
 static void ledThreadHandler(void);
@@ -38,15 +47,45 @@ static void httpGetRequestThreadHandler(void);
 static void httpPostRequestThreadHandler(void);
 static void storageThreadHandler(void);
 
-K_THREAD_DEFINE(ledThread, 512, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+static void sensorsDataListenerCallback(const struct zbus_channel *channel);
+static void eventsListenerCallback(const struct zbus_channel *channel);
+
+K_THREAD_DEFINE(ledThread, 1024, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(networkThread, 512, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(networkThread, 1024, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(httpGetRequestThread, 3*1024, httpGetRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(httpPostRequestThread, 3*1024, httpPostRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
-K_MSGQ_DEFINE(queue, sizeof(event_t), 8, 1);
+ZBUS_CHAN_DEFINE(
+  sensors_channel,                  /* Channel name */
+  sensor_t,                         /* Message type */
+  NULL,                             /* Validator function */
+  NULL,                             /* User data */
+  ZBUS_OBSERVERS(sensors_listener), /* Observers list */
+  ZBUS_MSG_INIT(.value = 0)         /* Message initialization */
+);
+ZBUS_CHAN_DEFINE(
+  events_channel,                          /* Channel name */
+  event_t,                                 /* Message type */
+  NULL,                                    /* Validator function */
+  NULL,                                    /* User data */
+  ZBUS_OBSERVERS(
+    events_listener,
+    http_get_request_subscriber,
+    http_post_request_subscriber,
+    led_subscriber
+  ),                                       /* Observers list */
+  ZBUS_MSG_INIT(.id = EVENT_INITIAL_VALUE) /* Message initialization */
+);
+
+ZBUS_LISTENER_DEFINE(sensors_listener, sensorsDataListenerCallback);
+ZBUS_LISTENER_DEFINE(events_listener, eventsListenerCallback);
+
+ZBUS_SUBSCRIBER_DEFINE(http_get_request_subscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(http_post_request_subscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(led_subscriber, 4);
 
 int main(void) {
   while (true) {
@@ -57,6 +96,10 @@ int main(void) {
 }
 
 static void ledThreadHandler(void) {
+  event_t event = {.id = EVENT_INITIAL_VALUE};
+
+  const struct zbus_channel *channel = NULL;
+
   // Reference devices from device tree
   const struct gpio_dt_spec greenLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0});
   const struct gpio_dt_spec blueLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0});
@@ -67,18 +110,34 @@ static void ledThreadHandler(void) {
   Led blueLed(&blueLedGpio);
   Led redLed(&redLedGpio);
 
-  // Continuously toggle LEDs
-  while (true) {
-    greenLed.toggle();
-    k_msleep(LED_THREAD_SLEEP_TIME_MS);
-    blueLed.toggle();
-    k_msleep(LED_THREAD_SLEEP_TIME_MS);
-    redLed.toggle();
-    k_msleep(LED_THREAD_SLEEP_TIME_MS);
+  while (!zbus_sub_wait(&led_subscriber, &channel, K_FOREVER)) {
+    if (&events_channel == channel) {
+      zbus_chan_read(&events_channel, &event, K_MSEC(500));
+      printk("Subscriber <%s> received event (%d) on <%s>\r\n",
+             led_subscriber.name,
+             event.id,
+             channel->name);
+      if (event.id == EVENT_BUTTON_PRESSED) {
+        // Toggle LEDs
+        greenLed.toggle();
+        k_msleep(LED_THREAD_SLEEP_TIME_MS);
+        blueLed.toggle();
+        k_msleep(LED_THREAD_SLEEP_TIME_MS);
+        redLed.toggle();
+        k_msleep(LED_THREAD_SLEEP_TIME_MS);
+      } else {
+        printk("I'm not interested in this event: %d\r\n", event.id);
+      }
+    } else {
+      printk("I'm not interested in this channel: %s\r\n", channel->name);
+    }
   }
 }
 
 static void temperatureThreadHandler(void) {
+  // Variable to hold temperature reading in Celsius
+  double temperatureReading = 0;
+
   // Reference device from device tree
   const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 
@@ -87,12 +146,16 @@ static void temperatureThreadHandler(void) {
 
   // Continuously read temperature
   while (true) {
-    printk("CPU temperature: %.1f °C\r\n", temperature.read());
+    // Publish temperature value to the zbus
+    temperatureReading = temperature.read();
+    zbus_chan_pub(&sensors_channel, &temperatureReading, K_MSEC(200));
     k_msleep(TEMPERATURE_THREAD_SLEEP_TIME_MS);
   }
 }
 
 static void buttonThreadHandler(void) {
+  event_t event = {.id = EVENT_BUTTON_PRESSED};
+
   // Reference device from device tree
   const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
 
@@ -103,6 +166,7 @@ static void buttonThreadHandler(void) {
   while (true) {
     if (button.isPressed()) {
       printk("Button is pressed\r\n");
+      zbus_chan_pub(&events_channel, &event, K_MSEC(200));
     }
     k_msleep(BUTTON_THREAD_SLEEP_TIME_MS);
   }
@@ -114,11 +178,10 @@ static void networkThreadHandler(void) {
 
   // Set up the lambda callback for IP address notification
   network.onGotIP([](const char *ipAddress) {
-    event_t event = EVENT_NETWORK_AVAILABLE;
+    event_t event = {.id = EVENT_NETWORK_AVAILABLE};
 
     printf("Got IP address: %s\r\n", ipAddress);
-    k_msgq_put(&queue, &event, K_NO_WAIT);
-    k_msgq_put(&queue, &event, K_NO_WAIT);
+    zbus_chan_pub(&events_channel, &event, K_MSEC(200));
   });
 
   // Start the network and wait for an IP address
@@ -130,78 +193,78 @@ static void networkThreadHandler(void) {
 }
 
 static void httpGetRequestThreadHandler(void) {
-  // Local variable to hold the received event on the queue
-  event_t event;
+  event_t event = {.id = EVENT_INITIAL_VALUE};
 
-  printk("Waiting for EVENT_NETWORK_AVAILABLE event...\r\n");
-
-  // Wait here forever for an event
-  k_msgq_get(&queue, &event, K_FOREVER);
-
-  // Check if we got the right event
-  if (event == EVENT_NETWORK_AVAILABLE) {
-    printk("Received EVENT_NETWORK_AVAILABLE event\r\n");
-  } else {
-    printk("Received a wrong event (%u)\r\n", event);
-  }
+  const struct zbus_channel *channel = NULL;
 
   // Create an HTTP client as a local object
-  HttpClient client((char *)"192.168.43.145", 1880);
+  HttpClient client((char *)"10.42.0.1", 1880);
 
-  // Send GET request and handle response in a lambda callback
-  client.get("/data", [](uint8_t *response, uint32_t length) {
-    size_t index = 0;
+  while (!zbus_sub_wait(&http_get_request_subscriber, &channel, K_FOREVER)) {
+    if (&events_channel == channel) {
+      zbus_chan_read(&events_channel, &event, K_MSEC(500));
+      printk("Subscriber <%s> received event (%d) on <%s>\r\n",
+             http_get_request_subscriber.name,
+             event.id,
+             channel->name);
+      if (event.id == EVENT_NETWORK_AVAILABLE) {
+        // Send GET request and handle response in a lambda callback
+        client.get("/data", [](uint8_t *response, uint32_t length) {
+          size_t index = 0;
 
-    // Skip headers by looking for the start of the json message
-    for (index = 0; index < length; index++) {
-      if (response[index] == '{') {
-        break;
+          // Skip headers by looking for the start of the json message
+          for (index = 0; index < length; index++) {
+            if (response[index] == '{') {
+              break;
+            }
+          }
+          printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
+        });
+      } else {
+        printk("I'm not interested in this event: %d\r\n", event.id);
       }
+    } else {
+      printk("I'm not interested in this channel: %s\r\n", channel->name);
     }
-    printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
-  });
-
-  while (true) {
-    k_msleep(HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS);
   }
 }
 
 static void httpPostRequestThreadHandler(void) {
-  // Local variable to hold the received event on the queue
-  event_t event;
+  event_t event = {.id = EVENT_INITIAL_VALUE};
 
-  printk("Waiting for EVENT_NETWORK_AVAILABLE event...\r\n");
-
-  // Wait here forever for an event
-  k_msgq_get(&queue, &event, K_FOREVER);
-
-  // Check if we got the right event
-  if (event == EVENT_NETWORK_AVAILABLE) {
-    printk("Received EVENT_NETWORK_AVAILABLE event\r\n");
-  } else {
-    printk("Received a wrong event (%u)\r\n", event);
-  }
+  const struct zbus_channel *channel = NULL;
 
   // Create an HTTP client as a local object
-  HttpClient client((char *)"192.168.43.145", 1880);
+  HttpClient client((char *)"10.42.0.1", 1880);
 
-  // Send POST request and handle response in a lambda callback
-  client.post("/data", "{\"temperature\": 20.6}",
-              sizeof("{\"temperature\": 20.6}")-1,
-              [](uint8_t *response, uint32_t length) {
-    size_t index = 0;
+  while (!zbus_sub_wait(&http_post_request_subscriber, &channel, K_FOREVER)) {
+    if (&events_channel == channel) {
+      zbus_chan_read(&events_channel, &event, K_MSEC(500));
+      printk("Subscriber <%s> received event (%d) on <%s>\r\n",
+             http_post_request_subscriber.name,
+             event.id,
+             channel->name);
+      if (event.id == EVENT_NETWORK_AVAILABLE) {
+        // Send POST request and handle response in a lambda callback
+        client.post("/data", "{\"status\": \"connected\"}",
+                    sizeof("{\"status\": \"connected\"}")-1,
+                    [](uint8_t *response, uint32_t length) {
+          size_t index = 0;
 
-    // Skip headers by looking for the start of the json response
-    for (index = 0; index < length; index++) {
-      if (response[index] == '{') {
-        break;
+          // Skip headers by looking for the start of the json response
+          for (index = 0; index < length; index++) {
+            if (response[index] == '{') {
+              break;
+            }
+          }
+          printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
+        });
+      } else {
+        printk("I'm not interested in this event: %d\r\n", event.id);
       }
+    } else {
+      printk("I'm not interested in this channel: %s\r\n", channel->name);
     }
-    printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
-  });
-
-  while (true) {
-    k_msleep(HTTP_GET_CLIENT_THREAD_SLEEP_TIME_MS);
   }
 }
 
@@ -233,4 +296,16 @@ static void storageThreadHandler(void) {
   while (true) {
     k_msleep(STORAGE_THREAD_SLEEP_TIME_MS);
   }
+}
+
+static void sensorsDataListenerCallback(const struct zbus_channel *channel) {
+  const sensor_t *data = (sensor_t *)zbus_chan_const_msg(channel);
+
+  printk("Listener <%s> received %.1f on <%s>\r\n", sensors_listener.name, data->value, channel->name);
+}
+
+static void eventsListenerCallback(const struct zbus_channel *channel) {
+  const event_t *event = (event_t *)zbus_chan_const_msg(channel);
+
+  printk("Listener <%s> received %d on <%s>\r\n", events_listener.name, event->id, channel->name);
 }
