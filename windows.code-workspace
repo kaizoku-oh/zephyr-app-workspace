@@ -158,7 +158,9 @@
 			"ms-python.python",
 			"ms-vscode.vscode-embedded-tools",
 			"marus25.cortex-debug",
-			"plorefice.devicetree"
+			"plorefice.devicetree",
+			"PKief.material-icon-theme",
+			"streetsidesoftware.code-spell-checker"
 		]
 	}
 }
