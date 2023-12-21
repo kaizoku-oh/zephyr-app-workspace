@@ -98,7 +98,7 @@ int main(void) {
 }
 
 static void ledThreadHandler() {
-  // Initilize local variable to hold the event
+  // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
   const struct zbus_channel *channel = NULL;
@@ -126,7 +126,7 @@ static void ledThreadHandler() {
              EVENT_ID_TO_STRING(event.id),
              channel->name);
 
-      // Make sure the event is the one we are intersted in
+      // Make sure the event is the one we are interested in
       if (event.id == EVENT_BUTTON_PRESSED) {
 
         // Toggle LEDs
@@ -167,7 +167,7 @@ static void temperatureThreadHandler() {
 }
 
 static void buttonThreadHandler() {
-  // Initilize local variable to hold the event
+  // Initialize local variable to hold the event
   event_t event = {.id = EVENT_BUTTON_PRESSED};
 
   // Reference GPIO device from device tree
@@ -209,7 +209,7 @@ static void networkThreadHandler() {
 }
 
 static void httpGetRequestThreadHandler() {
-  // Initilize local variable to hold the event
+  // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
   const struct zbus_channel *channel = NULL;
@@ -230,7 +230,7 @@ static void httpGetRequestThreadHandler() {
              EVENT_ID_TO_STRING(event.id),
              channel->name);
 
-      // Make sure the event is the one we are intersted in
+      // Make sure the event is the one we are interested in
       if (event.id == EVENT_NETWORK_AVAILABLE) {
 
         // Send GET request and handle response in a lambda callback
@@ -255,7 +255,7 @@ static void httpGetRequestThreadHandler() {
 }
 
 static void httpPostRequestThreadHandler() {
-  // Initilize local variable to hold the event
+  // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
   const struct zbus_channel *channel = NULL;
@@ -276,7 +276,7 @@ static void httpPostRequestThreadHandler() {
              EVENT_ID_TO_STRING(event.id),
              channel->name);
 
-      // Make sure the event is the one we are intersted in
+      // Make sure the event is the one we are interested in
       if (event.id == EVENT_NETWORK_AVAILABLE) {
 
         // Send POST request and handle response in a lambda callback

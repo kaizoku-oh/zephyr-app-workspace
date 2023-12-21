@@ -87,7 +87,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add configurable vscode tasks
 
-- [ ] Add vscode dev container environment
+- [x] Add vscode dev container environment
 
 - [ ] Integrate Renode + robot in the CI workflow
 

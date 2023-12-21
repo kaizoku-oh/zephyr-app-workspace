@@ -17,6 +17,53 @@
         // File Associations
         "files.associations": {}
       },
+      "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+          {
+            "label": "Build",
+            "type": "shell",
+            "group": {
+              "kind": "build",
+              "isDefault": true
+            },
+            "command": "west",
+            "args": [
+              "build",
+              "${workspaceFolder}/app",
+              "--build-dir",
+              "${workspaceFolder}/app/build",
+              "-p",
+              "auto",
+              "-b",
+              "nucleo_f767zi"
+            ],
+            "problemMatcher": [
+              "$gcc"
+            ]
+          },
+          {
+            "label": "Clean",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+              "-rf",
+              "${workspaceFolder}/app/build"
+            ],
+            "problemMatcher": [
+              "$gcc"
+            ]
+          },
+          {
+            "label": "Update",
+            "type": "shell",
+            "command": "west",
+            "args": [
+              "update"
+            ]
+          }
+        ]
+      },
       "extensions": [
         "ms-vscode.cpptools",
         "ms-python.python",
