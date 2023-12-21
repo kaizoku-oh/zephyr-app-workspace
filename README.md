@@ -49,8 +49,8 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 186708 B    | 768 KB      | 23.74%      |
-| RAM           | 58824  B    | 384 KB      | 14.96%      |
+| FLASH         | 186096 B    | 768 KB      | 23.66%      |
+| RAM           | 65648  B    | 384 KB      | 16.70%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
@@ -79,6 +79,18 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add NVS Storage class
 
+- [x] Add HTTP client class
+
+- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+
+- [ ] Run app in Renode
+
+- [ ] Add configurable vscode tasks
+
+- [x] Add vscode dev container environment
+
+- [ ] Integrate Renode + robot in the CI workflow
+
 - [ ] Build project with MCUBoot
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
@@ -97,13 +109,11 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [ ] Add HIL tests using GitHub local runner
 
-- [ ] Add application events manager
+- [ ] Add application events manager using zbus
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
 - [ ] Add debouncing mechanism to Button class
-
-- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
 
 - [ ] Add OTA update example
 
@@ -114,8 +124,6 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 - [ ] Use an event driven state machine using the SMF OS service and the message queue kernel object
 
 - [ ] Add Local class for managing local time and geo-location
-
-- [ ] Add HTTP client class
 
 - [ ] Add MQTT client class
 

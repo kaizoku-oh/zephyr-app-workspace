@@ -1,0 +1,31 @@
+{
+  "image": "ghcr.io/embeddedcontainers/zephyr:arm-0.16.4SDK",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace/app,type=bind",
+  "workspaceFolder": "/workspace",
+  "onCreateCommand": "west init -l app/ && west update && west zephyr-export && pip install -r deps/zephyr/scripts/requirements-base.txt",
+  "mounts": [
+    "source=${localWorkspaceFolder}/.vscode/,target=/workspace/.vscode,type=bind,consistency=cached"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Hush CMake
+        "cmake.configureOnOpen": false,
+        // IntelliSense
+        "C_Cpp.default.compilerPath": "/opt/toolchains/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
+        "C_Cpp.default.compileCommands": "${workspaceFolder}/app/build/compile_commands.json",
+        // File Associations
+        "files.associations": {}
+      },
+      "extensions": [
+        "ms-vscode.cpptools",
+        "ms-python.python",
+        "ms-vscode.vscode-embedded-tools",
+        "marus25.cortex-debug",
+        "plorefice.devicetree",
+        "PKief.material-icon-theme",
+        "streetsidesoftware.code-spell-checker"
+      ]
+    }
+  }
+}

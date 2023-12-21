@@ -1,0 +1,15 @@
+using sysbus
+$name?="nucleo_f767zi"
+mach create $name
+
+machine LoadPlatformDescription @/home/bayrem/workspace/embedded/zephyr-app-workspace/app/scripts/renode/nucleo-f767zi.repl
+
+showAnalyzer sysbus.usart3
+
+macro reset
+"""
+    sysbus LoadBinary @/home/bayrem/workspace/embedded/zephyr-app-workspace/app/build/zephyr/zephyr.bin 0x08040000
+
+"""
+
+runMacro $reset

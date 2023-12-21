@@ -41,6 +41,27 @@
 				],
 			},
 			{
+				"label": "Configurable Build",
+				"type": "shell",
+				"group": {
+					"kind": "build",
+				},
+				"command": "${workspaceFolder}/.venv/bin/west",
+				"args": [
+					"build",
+					"${workspaceFolder}/app",
+					"--build-dir",
+					"${workspaceFolder}/app/build",
+					"-p",
+					"auto",
+					"-b",
+					"${input:board}"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
 				"label": "Flash",
 				"type": "shell",
 				"command": "${workspaceFolder}/.venv/bin/west",
@@ -154,7 +175,9 @@
 			"ms-python.python",
 			"ms-vscode.vscode-embedded-tools",
 			"marus25.cortex-debug",
-			"plorefice.devicetree"
+			"plorefice.devicetree",
+			"PKief.material-icon-theme",
+			"streetsidesoftware.code-spell-checker"
 		]
 	}
 }

@@ -16,6 +16,10 @@ public:
   HttpClient(char *server, uint16_t port);
   ~HttpClient();
   int get(const char *endpoint, std::function<void(uint8_t *, uint32_t)> callback);
+  int post(const char *endpoint,
+           const char *data,
+           uint32_t length,
+           std::function<void(uint8_t *, uint32_t)> callback);
 
 private:
   int sock;
