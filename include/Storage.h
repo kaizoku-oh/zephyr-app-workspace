@@ -17,13 +17,14 @@ public:
   int clear();
 
 private:
-  // Private constructor to prevent direct instantiation
+  // Private constructor and destructor to prevent direct instantiation and destruction
   Storage();
   ~Storage();
 
   // Static member to hold the singleton instance
   static Storage instance;
 
+  // NVS file system, internally protected by a mutex
   struct nvs_fs fs;
 };
 

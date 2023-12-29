@@ -19,30 +19,7 @@
 #include "Network.h"
 #include "HttpClient.h"
 #include "Storage.h"
-
-// Macro to convert event ID to string
-#define EVENT_ID_TO_STRING(id) (event_names[(id)])
-
-// Possible events
-typedef enum {
-  EVENT_INITIAL_VALUE = 0,
-  EVENT_NETWORK_AVAILABLE,
-  EVENT_BUTTON_PRESSED,
-  EVENT_MAX
-} event_id_t;
-
-// event_id_t enum is embedded inside event_t struct because ZBUS only accepts struct or union
-typedef struct {
-  event_id_t id;
-} event_t;
-
-// Event id to string mapping
-static const char *event_names [] = {
-  [EVENT_INITIAL_VALUE]     = "EVENT_INITIAL_VALUE",
-  [EVENT_NETWORK_AVAILABLE] = "EVENT_NETWORK_AVAILABLE",
-  [EVENT_BUTTON_PRESSED]    = "EVENT_BUTTON_PRESSED",
-  [EVENT_MAX]               = "EVENT_MAX",
-};
+#include "EventManager.h"
 
 // Function declaration of thread handlers
 static void ledThreadHandler();
@@ -67,9 +44,6 @@ static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t STORAGE_THREAD_SLEEP_TIME_MS = 1000;
 
-// Software timer definition
-K_TIMER_DEFINE(triggerTimer, triggerTimerCallback, NULL);
-
 // ZBUS listener definition
 ZBUS_LISTENER_DEFINE(eventsListener, eventsListenerCallback);
 
@@ -78,33 +52,33 @@ ZBUS_SUBSCRIBER_DEFINE(httpGetRequestSubscriber, 4);
 ZBUS_SUBSCRIBER_DEFINE(httpPostRequestSubscriber, 4);
 ZBUS_SUBSCRIBER_DEFINE(ledSubscriber, 4);
 
-// ZBUS channel definition
-ZBUS_CHAN_DEFINE(
-  eventsChannel,                           // Channel name
-  event_t,                                 // Message type
-  NULL,                                    // Validator function
-  NULL,                                    // User data
-  ZBUS_OBSERVERS(
-    eventsListener,
-    httpGetRequestSubscriber,
-    httpPostRequestSubscriber
-  ),                                       // Initial observers list
-  ZBUS_MSG_INIT(.id = EVENT_INITIAL_VALUE) // Message initialization
-);
-
-// Add a subscriber observer to ZBUS channel
+// Add observers to ZBUS event channel
+ZBUS_CHAN_ADD_OBS(eventsChannel, eventsListener, 4);
 ZBUS_CHAN_ADD_OBS(eventsChannel, ledSubscriber, 4);
+ZBUS_CHAN_ADD_OBS(eventsChannel, httpGetRequestSubscriber, 4);
+ZBUS_CHAN_ADD_OBS(eventsChannel, httpPostRequestSubscriber, 4);
 
 // Threads definition
 K_THREAD_DEFINE(ledThread, 1024, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(networkThread, 1024, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(httpGetRequestThread, 3*1024, httpGetRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(httpPostRequestThread, 3*1024, httpPostRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
-K_THREAD_DEFINE(storageThread, 2*1024, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpGetRequestThread, 3072, httpGetRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(httpPostRequestThread, 3072, httpPostRequestThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(storageThread, 2048, storageThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+
+// Software timer definition
+K_TIMER_DEFINE(triggerTimer, triggerTimerCallback, NULL);
 
 int main(void) {
+  // Initialize local variable to hold the event
+  event_t event = {.id = EVENT_INITIAL_VALUE};
+
+  // Publish the <EVENT_START_SENSOR_DATA_ACQUISITION> event on <eventsChannel>
+  event.id = EVENT_START_SENSOR_DATA_ACQUISITION;
+  zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+
+  // Start a periodic software timer after 10 seconds
   k_timer_start(&triggerTimer, K_SECONDS(10), K_SECONDS(10));
 
   while (true) {
