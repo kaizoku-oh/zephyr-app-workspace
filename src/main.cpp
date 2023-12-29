@@ -1,14 +1,17 @@
+// Lib C includes
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <inttypes.h>
 
+// Zephyr includes
 #include <zephyr/kernel.h>
 #include <zephyr/device.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/zbus/zbus.h>
 
+// User C++ class headers
 #include "Button.h"
 #include "Led.h"
 #include "Temperature.h"
@@ -17,8 +20,10 @@
 #include "HttpClient.h"
 #include "Storage.h"
 
+// Macro to convert event ID to string
 #define EVENT_ID_TO_STRING(id) (event_names[(id)])
 
+// Possible events
 typedef enum {
   EVENT_INITIAL_VALUE = 0,
   EVENT_NETWORK_AVAILABLE,
@@ -26,10 +31,12 @@ typedef enum {
   EVENT_MAX
 } event_id_t;
 
+// event_id_t enum is embedded inside event_t struct because ZBUS only accepts struct or union
 typedef struct {
   event_id_t id;
 } event_t;
 
+// Event id to string mapping
 static const char *event_names [] = {
   [EVENT_INITIAL_VALUE]     = "EVENT_INITIAL_VALUE",
   [EVENT_NETWORK_AVAILABLE] = "EVENT_NETWORK_AVAILABLE",
@@ -37,6 +44,7 @@ static const char *event_names [] = {
   [EVENT_MAX]               = "EVENT_MAX",
 };
 
+// Function declaration of thread handlers
 static void ledThreadHandler();
 static void temperatureThreadHandler();
 static void buttonThreadHandler();
@@ -45,10 +53,13 @@ static void httpGetRequestThreadHandler();
 static void httpPostRequestThreadHandler();
 static void storageThreadHandler();
 
-static void triggerTimerHandler(struct k_timer *timer);
+// Software timer callback function declaration
+static void triggerTimerCallback(struct k_timer *timer);
 
+// ZBUS listener callback declaration
 static void eventsListenerCallback(const struct zbus_channel *channel);
 
+// Delay values used inside thread loops to yield back to scheduler
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t LED_THREAD_SLEEP_TIME_MS = 50;
 static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 5000;
@@ -56,14 +67,18 @@ static constexpr uint32_t BUTTON_THREAD_SLEEP_TIME_MS = 100;
 static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 1000;
 static constexpr uint32_t STORAGE_THREAD_SLEEP_TIME_MS = 1000;
 
-K_TIMER_DEFINE(triggerTimer, triggerTimerHandler, NULL);
+// Software timer definition
+K_TIMER_DEFINE(triggerTimer, triggerTimerCallback, NULL);
 
+// ZBUS listener definition
 ZBUS_LISTENER_DEFINE(eventsListener, eventsListenerCallback);
 
+// ZBUS subscribers definition
 ZBUS_SUBSCRIBER_DEFINE(httpGetRequestSubscriber, 4);
 ZBUS_SUBSCRIBER_DEFINE(httpPostRequestSubscriber, 4);
 ZBUS_SUBSCRIBER_DEFINE(ledSubscriber, 4);
 
+// ZBUS channel definition
 ZBUS_CHAN_DEFINE(
   eventsChannel,                           // Channel name
   event_t,                                 // Message type
@@ -77,8 +92,10 @@ ZBUS_CHAN_DEFINE(
   ZBUS_MSG_INIT(.id = EVENT_INITIAL_VALUE) // Message initialization
 );
 
+// Add a subscriber observer to ZBUS channel
 ZBUS_CHAN_ADD_OBS(eventsChannel, ledSubscriber, 4);
 
+// Threads definition
 K_THREAD_DEFINE(ledThread, 1024, ledThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 K_THREAD_DEFINE(buttonThread, 1024, buttonThreadHandler, NULL, NULL, NULL, 7, 0, 0);
@@ -101,6 +118,7 @@ static void ledThreadHandler() {
   // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
+  // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
 
   // Reference GPIO devices from device tree
@@ -108,7 +126,7 @@ static void ledThreadHandler() {
   const struct gpio_dt_spec blueLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0});
   const struct gpio_dt_spec redLedGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0});
 
-  // Create local object using the device tree device
+  // Create local object using the device tree devices
   Led greenLed(&greenLedGpio);
   Led blueLed(&blueLedGpio);
   Led redLed(&redLedGpio);
@@ -128,6 +146,8 @@ static void ledThreadHandler() {
 
       // Make sure the event is the one we are interested in
       if (event.id == EVENT_BUTTON_PRESSED) {
+
+        printk("Button is pressed\r\n");
 
         // Toggle LEDs
         greenLed.toggle();
@@ -160,7 +180,6 @@ static void temperatureThreadHandler() {
 
   // Continuously read temperature
   while (true) {
-    // Publish temperature value to the zbus
     temperatureReading = temperature.read();
     k_msleep(TEMPERATURE_THREAD_SLEEP_TIME_MS);
   }
@@ -173,13 +192,12 @@ static void buttonThreadHandler() {
   // Reference GPIO device from device tree
   const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
 
-  // Create local object using the device tree device
+  // Create local object using the device
   Button button(&buttonGpio);
 
   // Continuously check if a button is pressed
   while (true) {
     if (button.isPressed()) {
-      printk("Button is pressed\r\n");
       // Publish the <EVENT_BUTTON_PRESSED> event on <eventsChannel>
       zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
     }
@@ -212,6 +230,7 @@ static void httpGetRequestThreadHandler() {
   // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
+  // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
 
   // Create an HTTP client as a local object
@@ -258,6 +277,7 @@ static void httpPostRequestThreadHandler() {
   // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
+  // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
 
   // Create an HTTP client as a local object
@@ -304,6 +324,8 @@ static void httpPostRequestThreadHandler() {
 
 static void storageThreadHandler() {
   int ret = 0;
+
+  // Buffer used to read and write to NVS
   uint8_t buffer[sizeof("xxx.xxx.xxx.xxx")] = {0};
 
   const uint16_t IP_ADDRESS_ID = 1;
@@ -339,6 +361,6 @@ static void eventsListenerCallback(const struct zbus_channel *channel) {
   printk("Listener <%s> received event: <%d> on <%s>\r\n", eventsListener.name, event->id, channel->name);
 }
 
-static void triggerTimerHandler(struct k_timer *timer) {
+static void triggerTimerCallback(struct k_timer *timer) {
   printk("Timer is triggered\r\n");
 }
