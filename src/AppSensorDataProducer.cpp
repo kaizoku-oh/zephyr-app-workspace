@@ -10,18 +10,18 @@
 ZBUS_CHAN_DECLARE(eventsChannel);
 
 // Function declaration of thread handlers
-static void SensorDataProducerThreadHandler();
+static void sensorDataProducerThreadHandler();
 
 // ZBUS subscribers definition
-ZBUS_SUBSCRIBER_DEFINE(SensorDataProducerSubscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(sensorDataProducerSubscriber, 4);
 
 // Add a subscriber observer to ZBUS events channel
-ZBUS_CHAN_ADD_OBS(eventsChannel, SensorDataProducerSubscriber, 4);
+ZBUS_CHAN_ADD_OBS(eventsChannel, sensorDataProducerSubscriber, 4);
 
 // Thread definition
-K_THREAD_DEFINE(SensorDataProducerThread, 1024, SensorDataProducerThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(sensorDataProducerThread, 1024, sensorDataProducerThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
-static void SensorDataProducerThreadHandler() {
+static void sensorDataProducerThreadHandler() {
   int ret = 0;
 
   // Initialize local variable to hold the event
@@ -33,7 +33,7 @@ static void SensorDataProducerThreadHandler() {
   while (true) {
 
     // Wait forever for an event
-    ret = zbus_sub_wait(&SensorDataProducerSubscriber, &channel, K_FOREVER);
+    ret = zbus_sub_wait(&sensorDataProducerSubscriber, &channel, K_FOREVER);
 
     // Check if notification is received
     if (ret == 0) {
@@ -44,7 +44,7 @@ static void SensorDataProducerThreadHandler() {
         // Read the event
         zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
         printk("Subscriber <%s> received event <%s> on <%s>\r\n",
-               SensorDataProducerSubscriber.name,
+               sensorDataProducerSubscriber.name,
                EVENT_ID_TO_STRING(event.id),
                channel->name);
 
@@ -70,14 +70,21 @@ static void SensorDataProducerThreadHandler() {
 
           default: {
             // I'm not interested in this event
+            printk("%s is not interested in this event: %s",
+                   sensorDataProducerSubscriber.name,
+                   EVENT_ID_TO_STRING(event.id));
             break;
           }
         }
       } else {
         // I'm not interested in this channel
+        printk("%s is not interested in this channel: %s",
+               sensorDataProducerSubscriber.name,
+               channel->name);
       }
     } else {
       // Something wrong happened while waiting for event
+      printk("Something wrong happened while waiting for event: %d", ret);
     }
   }
 }
