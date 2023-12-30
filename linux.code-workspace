@@ -62,19 +62,6 @@
 				]
 			},
 			{
-				"label": "Flash",
-				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
-				"args": [
-					"flash",
-					"-d",
-					"${workspaceFolder}/app/build",
-				],
-				"problemMatcher": [
-					"$gcc"
-				]
-			},
-			{
 				"label": "Clean",
 				"type": "shell",
 				"command": "rm",
@@ -87,7 +74,36 @@
 				]
 			},
 			{
-				"label": "Erase",
+				"label": "Flash (west)",
+				"type": "shell",
+				"command": "${workspaceFolder}/.venv/bin/west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/app/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"app/build/zephyr/zephyr.bin",
+					"0x08040000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Erase (STM32CubeProgrammer)",
 				"type": "shell",
 				"command": "STM32_Programmer_CLI",
 				"args": [

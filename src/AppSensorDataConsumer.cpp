@@ -6,6 +6,9 @@
 // User C++ class headers
 #include "EventManager.h"
 
+// Import channel from another file
+ZBUS_CHAN_DECLARE(eventsChannel);
+
 // Function declaration of thread handlers
 static void SensorDataConsumerThreadHandler();
 

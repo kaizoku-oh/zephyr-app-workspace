@@ -70,6 +70,9 @@ K_THREAD_DEFINE(storageThread, 2048, storageThreadHandler, NULL, NULL, NULL, 7, 
 // Software timer definition
 K_TIMER_DEFINE(triggerTimer, triggerTimerCallback, NULL);
 
+// Import channel from another file
+ZBUS_CHAN_DECLARE(eventsChannel);
+
 int main(void) {
   // Initialize local variable to hold the event
   event_t event = {.id = EVENT_INITIAL_VALUE};

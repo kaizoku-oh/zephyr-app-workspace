@@ -15,23 +15,30 @@ This repo can be used as a template and a playground for experimenting with a st
 $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
 $ cd workspace
 
+# Setup python virtual environment
+$ export PIPENV_VENV_IN_PROJECT=1
+$ mkdir .venv
+$ touch Pipfile
+$ pipenv shell
+$ pip install -r deps/zephyr/scripts/requirements.txt
+
 # Update Zephyr modules
-$ west update
+(zephyr-app-workspace) $ west update
 
 # Copy vscode workspace file from the app to the outer workspace directory
-$ Copy-Item –Path app/zephyr-windows.code-workspace -Destination .
+(zephyr-app-workspace) $ cp app/linux.code-workspace .
 
 # Build the app
-$ west build app -d app/build -b nucleo_f767zi
+(zephyr-app-workspace) $ west build app -d app/build -b nucleo_f767zi
 
 # Turn on compilation database
-$ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+(zephyr-app-workspace) $ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 # Retrieve `ZEPHYR_SDK_INSTALL_DIR`
-$ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
+(zephyr-app-workspace) $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 
 # Open vscode workspace
-$ code zephyr-windows.code-workspace
+(zephyr-app-workspace) $ code zephyr-linux.code-workspace
 ```
 Once vscode is open you can run your workspace tasks like the following
 
