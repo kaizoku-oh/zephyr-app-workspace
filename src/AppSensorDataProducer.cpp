@@ -42,46 +42,46 @@ static void sensorDataProducerThreadHandler() {
       if (&eventsChannel == channel) {
 
         // Read the event
-        zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
-        printk("Subscriber <%s> received event <%s> on <%s>\r\n",
-               sensorDataProducerSubscriber.name,
-               EVENT_ID_TO_STRING(event.id),
-               channel->name);
+        ret = zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
+        if (ret == 0) {
+          printk("Subscriber <%s> received event <%s> on <%s>\r\n",
+                 sensorDataProducerSubscriber.name,
+                 EVENT_ID_TO_STRING(event.id),
+                 channel->name);
 
-        // Make sure the event is the one we are interested in
-        switch (event.id) {
-          case EVENT_START_SENSOR_DATA_ACQUISITION:
-          case EVENT_SENSOR_DATA_SENT: {
-            printk("Started acquiring sensor data and saving it to storage");
+          // Make sure the event is the one we are interested in
+          switch (event.id) {
 
-            // Fake acquisition (to be replaced with real sensor acquisition function)
-            for (size_t i = 0; i < 10; i++) {
-              printk(".");
-              k_msleep(500);
+            case EVENT_START_SENSOR_DATA_ACQUISITION:
+            case EVENT_SENSOR_DATA_SENT: {
+              printk("Started acquiring sensor data and saving it to storage");
+
+              // Fake acquisition (to be replaced with real sensor acquisition function)
+              for (size_t i = 0; i < 10; i++) {
+                printk(".");
+                k_msleep(500);
+              }
+              printk("\r\n");
+
+              // Publish the <EVENT_SENSOR_DATA_SAVED> event on <eventsChannel>
+              event.id = EVENT_SENSOR_DATA_SAVED;
+              zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+
+              break;
             }
-            printk("\r\n");
 
-            // Publish the <EVENT_SENSOR_DATA_SAVED> event on <eventsChannel>
-            event.id = EVENT_SENSOR_DATA_SAVED;
-            zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
-
-            break;
+            default: {
+              // I'm not interested in this event
+              printk("<%s> is not interested in this event: <%s>",
+                     sensorDataProducerSubscriber.name,
+                     EVENT_ID_TO_STRING(event.id));
+              break;
+            }
           }
-
-          default: {
-            // I'm not interested in this event
-            printk("%s is not interested in this event: %s",
-                   sensorDataProducerSubscriber.name,
-                   EVENT_ID_TO_STRING(event.id));
-            break;
-          }
+        } else {
+          // Something wrong happened while reading event from channel
+          printk("Something wrong happened while reading from channel: %d", ret);
         }
-      } else {
-        // I'm not interested in this channel
-        printk("%s is not interested in this channel: %s",
-               sensorDataProducerSubscriber.name,
-               channel->name);
-      }
     } else {
       // Something wrong happened while waiting for event
       printk("Something wrong happened while waiting for event: %d", ret);
