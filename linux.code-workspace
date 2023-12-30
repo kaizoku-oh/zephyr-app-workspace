@@ -84,7 +84,7 @@
 				]
 			},
 			{
-				"label": "Clean",
+				"label": "Clean (application)",
 				"type": "shell",
 				"command": "rm",
 				"args": [
@@ -96,7 +96,19 @@
 				]
 			},
 			{
-				"label": "Flash (west)",
+				"label": "Clean (bootloader)",
+				"type": "shell",
+				"command": "rm",
+				"args": [
+					"-rf",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (west app)",
 				"type": "shell",
 				"command": "${workspaceFolder}/.venv/bin/west",
 				"args": [
@@ -109,7 +121,20 @@
 				]
 			},
 			{
-				"label": "Flash (STM32CubeProgrammer)",
+				"label": "Flash (west boot)",
+				"type": "shell",
+				"command": "${workspaceFolder}/.venv/bin/west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer app)",
 				"type": "shell",
 				"command": "STM32_Programmer_CLI",
 				"args": [
@@ -119,6 +144,22 @@
 					"-w",
 					"app/build/zephyr/zephyr.bin",
 					"0x08040000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer boot)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"deps/bootloader/mcuboot/boot/zephyr/build/zephyr/zephyr.bin",
+					"0x08000000"
 				],
 				"problemMatcher": [
 					"$gcc"

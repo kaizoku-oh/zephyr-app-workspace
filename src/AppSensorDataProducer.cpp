@@ -82,6 +82,12 @@ static void sensorDataProducerThreadHandler() {
           // Something wrong happened while reading event from channel
           printk("Something wrong happened while reading from channel: %d", ret);
         }
+      } else {
+        // I'm not interested in this channel
+        printk("<%s> is not interested in this channel: <%s>",
+               sensorDataProducerSubscriber.name,
+               channel->name);
+      }
     } else {
       // Something wrong happened while waiting for event
       printk("Something wrong happened while waiting for event: %d", ret);
