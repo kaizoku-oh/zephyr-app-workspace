@@ -1,7 +1,10 @@
-#include <zephyr/sys/printk.h>
+// Zephyr includes
 #include <zephyr/net/net_core.h>
 #include <zephyr/net/net_context.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(Network);
 
+// User C++ class headers
 #include "Network.h"
 
 static void netMgmtCallback(struct net_mgmt_event_callback *cb, uint32_t event, struct net_if *iface);
@@ -29,7 +32,7 @@ void Network::start() {
 
 void Network::onGotIP(std::function<void(const char *)> callback) {
   if (callback == nullptr) {
-    printk("Failed to register callback\r\n");
+    LOG_ERR("Failed to register callback\r\n");
     return;
   }
 
@@ -50,7 +53,7 @@ static void netMgmtCallback(struct net_mgmt_event_callback *cb, uint32_t event, 
           Network::getInstance().callback(ipBuffer);
         }
       } else {
-        printk("Error while converting IP address to string form\r\n");
+        LOG_ERR("Error while converting IP address to string form\r\n");
       }
     }
   }

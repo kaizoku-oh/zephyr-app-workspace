@@ -1,5 +1,7 @@
 // Zephyr includes
 #include <zephyr/zbus/zbus.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(EventManager);
 
 // User C++ class headers
 #include "EventManager.h"

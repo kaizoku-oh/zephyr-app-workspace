@@ -1,7 +1,8 @@
 // Zephyr includes
 #include <zephyr/kernel.h>
-#include <zephyr/sys/printk.h>
 #include <zephyr/zbus/zbus.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(AppSensorDataConsumer);
 
 // User C++ class headers
 #include "EventManager.h"
@@ -41,20 +42,20 @@ static void sensorDataConsumerThreadHandler() {
         // Read the event
         ret = zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
         if (ret == 0) {
-          printk("Subscriber <%s> received event <%s> on <%s>\r\n",
-                 sensorDataConsumerSubscriber.name,
-                 EVENT_ID_TO_STRING(event.id),
-                 channel->name);
+          LOG_DBG("Subscriber <%s> received event <%s> on <%s>\r\n",
+                  sensorDataConsumerSubscriber.name,
+                  EVENT_ID_TO_STRING(event.id),
+                  channel->name);
 
           // Make sure the event is the one we are interested in
           switch (event.id) {
 
             case EVENT_SENSOR_DATA_SAVED: {
-              printk("Started sending sensor data to cloud");
+              LOG_INF("Started sending sensor data to cloud");
 
               // Fake sending (to be replaced with real sending function)
               k_msleep(5000);
-              printk("\r\n===========================================================\r\n");
+              LOG_INF("\r\n===========================================================\r\n");
 
               // Publish the <EVENT_SENSOR_DATA_SENT> event on <eventsChannel>
               event.id = EVENT_SENSOR_DATA_SENT;
@@ -65,25 +66,25 @@ static void sensorDataConsumerThreadHandler() {
 
             default: {
               // I'm not interested in this event
-              printk("<%s> is not interested in this event: <%s>",
-                     sensorDataConsumerSubscriber.name,
-                     EVENT_ID_TO_STRING(event.id));
+              LOG_DBG("<%s> is not interested in this event: <%s>",
+                      sensorDataConsumerSubscriber.name,
+                      EVENT_ID_TO_STRING(event.id));
               break;
             }
           }
         } else {
           // Something wrong happened while reading event from channel
-          printk("Something wrong happened while reading from channel: %d", ret);
+          LOG_ERR("Something wrong happened while reading from channel: %d", ret);
         }
       } else {
         // I'm not interested in this channel
-        printk("<%s> is not interested in this channel: <%s>",
-               sensorDataConsumerSubscriber.name,
-               channel->name);
+        LOG_WRN("<%s> is not interested in this channel: <%s>",
+                sensorDataConsumerSubscriber.name,
+                channel->name);
       }
     } else {
       // Something wrong happened while waiting for event
-      printk("Something wrong happened while waiting for event: %d", ret);
+      LOG_ERR("Something wrong happened while waiting for event: %d", ret);
     }
   }
 }

@@ -1,13 +1,12 @@
-#include <zephyr/sys/printk.h>
+// Zephyr includes
 #include <zephyr/drivers/flash.h>
 #include <zephyr/storage/flash_map.h>
 #include <zephyr/fs/nvs.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(Storage);
 
+// User C++ class headers
 #include "Storage.h"
-
-#include <zephyr/drivers/flash.h>
-#include <zephyr/storage/flash_map.h>
-#include <zephyr/fs/nvs.h>
 
 #define NVS_PARTITION_DEVICE FIXED_PARTITION_DEVICE(storage_partition)
 #define NVS_PARTITION_OFFSET FIXED_PARTITION_OFFSET(storage_partition)
@@ -28,7 +27,7 @@ Storage::Storage() {
   this->fs.flash_device = NVS_PARTITION_DEVICE;
   ret = device_is_ready(this->fs.flash_device);
   if (ret == 0) {
-    printk("Flash device %s is not ready\r\n", this->fs.flash_device->name);
+    LOG_ERR("Flash device %s is not ready\r\n", this->fs.flash_device->name);
     return;
   }
 
@@ -36,7 +35,7 @@ Storage::Storage() {
   this->fs.offset = NVS_PARTITION_OFFSET;
   ret = flash_get_page_info_by_offs(this->fs.flash_device, this->fs.offset, &pageInfo);
   if (ret != 0) {
-    printk("Unable to get page inf>>o\r\n");
+    LOG_ERR("Unable to get page inf>>o\r\n");
     return;
   }
 
@@ -45,7 +44,7 @@ Storage::Storage() {
   this->fs.sector_count = 2U;
   ret = nvs_mount(&this->fs);
   if (ret != 0) {
-    printk("Flash Init failed -(%d)\r\n", ret);
+    LOG_ERR("Flash Init failed -(%d)\r\n", ret);
     return;
   }
 }
@@ -59,10 +58,10 @@ int Storage::read(uint16_t id, uint8_t *buffer, size_t length) {
   // Read an entry by its id from the NVS file system
   ret = nvs_read(&this->fs, id, buffer, sizeof(buffer));
   if (ret > 0) {
-    printk("Found it (%d bytes)!\r\n", ret);
-    printk("id: %d, value: %.*s\r\n", id, ret, buffer);
+    LOG_DBG("Found it (%d bytes)!\r\n", ret);
+    LOG_DBG("id: %d, value: %.*s\r\n", id, ret, buffer);
   } else {
-    printk("id %d not found in NVS!\r\n", id);
+    LOG_DBG("id %d not found in NVS!\r\n", id);
   }
 
   return ret;
@@ -74,11 +73,11 @@ int Storage::write(uint16_t id, uint8_t *data, size_t length) {
   // Write an entry by its id to the NVS file system
   ret = nvs_write(&this->fs, id, data, sizeof(data));
   if (ret > 0) {
-    printk("%d bytes written to NVS\r\n", ret);
+    LOG_DBG("%d bytes written to NVS\r\n", ret);
   } else if (ret == 0) {
-    printk("Rewriting the same data already stored, nothing is written to NVS\r\n");
+    LOG_DBG("Rewriting the same data already stored, nothing is written to NVS\r\n");
   } else {
-    printk("Failed to write to NVS: -(%d)\r\n", ret);
+    LOG_ERR("Failed to write to NVS: -(%d)\r\n", ret);
   }
 
   return ret;
@@ -90,9 +89,9 @@ int Storage::remove(uint16_t id) {
   // Delete an entry from the NVS file system
   ret = nvs_delete(&this->fs, id);
   if (ret == 0) {
-    printk("Entry with id %d is deleted from NVS\r\n", id);
+    LOG_DBG("Entry with id %d is deleted from NVS\r\n", id);
   } else {
-    printk("Failed to delete entry with id %d from NVS: -(%d)\r\n", id, ret);
+    LOG_ERR("Failed to delete entry with id %d from NVS: -(%d)\r\n", id, ret);
   }
 
   return ret;
@@ -104,9 +103,9 @@ int Storage::clear() {
   // Clear the NVS file system from flash
   ret = nvs_clear(&this->fs);
   if (ret == 0) {
-    printk("NVS file system is cleared from flash\r\n");
+    LOG_DBG("NVS file system is cleared from flash\r\n");
   } else {
-    printk("Failed to clear NVS file system from flash: -(%d)\r\n", ret);
+    LOG_ERR("Failed to clear NVS file system from flash: -(%d)\r\n", ret);
   }
 
   return ret;

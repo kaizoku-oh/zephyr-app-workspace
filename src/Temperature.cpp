@@ -1,19 +1,22 @@
+// Zephyr includes
 #include <zephyr/device.h>
 #include <zephyr/drivers/sensor.h>
-#include <zephyr/sys/printk.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(Temperature);
 
+// User C++ class headers
 #include "Temperature.h"
 
 Temperature::Temperature(const struct device *device) {
   if (device == NULL) {
-    printk("Error: Invalid argument\r\n");
+    LOG_ERR("Error: Invalid argument\r\n");
     return;
   }
 
   this->_device = device;
 
   if (!device_is_ready(this->_device)) {
-    printk("Error: Device is not ready\r\n");
+    LOG_ERR("Error: Device is not ready\r\n");
     return;
   }
 }
@@ -28,13 +31,13 @@ double Temperature::read() {
 
   ret = sensor_sample_fetch(this->_device);
   if (ret) {
-      printk("Failed to fetch sample (%d)\n", ret);
+      LOG_ERR("Failed to fetch sample (%d)\n", ret);
       return 0;
   }
 
   ret = sensor_channel_get(this->_device, SENSOR_CHAN_DIE_TEMP, &value);
   if (ret) {
-      printk("Failed to get data (%d)\n", ret);
+      LOG_ERR("Failed to get data (%d)\n", ret);
       return 0;
   }
 
