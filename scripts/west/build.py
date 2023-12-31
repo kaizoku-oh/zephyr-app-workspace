@@ -21,7 +21,8 @@ def run_build_command(build_command):
 
 def extract_build_footprint(output):
     # Define the regular expression pattern to extract memory regions and sizes
-    pattern = r"Memory region\s+Used Size\s+Region Size\s+%age Used\n(.+?)\n\n"
+    pattern = r"Memory region\s+Used Size\s+Region Size\s+%age Used\n((?:\s+\w+:\s+\d+\s+\w+\s+\d+\s+\w+\s+\d+\.\d+%[\n\s]+)+)"
+
 
     # Find the memory region information using regex
     match = re.search(pattern, output, re.DOTALL)
@@ -31,16 +32,20 @@ def extract_build_footprint(output):
         return None
 
 if __name__ == "__main__":
-    # Check if a build command is provided as an argument
-    if len(sys.argv) < 2:
-        print("Please provide the 'west build' command as an argument.")
-        sys.exit(1)
+    # Combine all command-line arguments after the script name into a single string
+    build_command = ' '.join(sys.argv[1:])
 
-    # Get the 'west build' command from the command line arguments
-    build_command = sys.argv[1]
+    print(build_command)
+
+    # Check if the 'west build' command is provided
+    if not build_command.startswith('west build'):
+        print("Please provide the 'west build' command.")
+        sys.exit(1)
 
     # Run the 'west build' command and capture its output
     build_output = run_build_command(build_command)
+
+    print(build_output)
 
     if build_output:
         # Extract and print the build footprint
