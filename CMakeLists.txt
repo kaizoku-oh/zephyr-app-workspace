@@ -17,4 +17,5 @@ target_sources(app PRIVATE
   src/HttpClient.cpp
   src/AppSensorDataProducer.cpp
   src/AppSensorDataConsumer.cpp
+  src/EventManager.cpp
 )

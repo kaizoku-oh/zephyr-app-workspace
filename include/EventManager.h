@@ -34,14 +34,7 @@ static const char *EVENT_NAMES[] = {
   [EVENT_MAX_VALUE]                     = "EVENT_MAX_VALUE"
 };
 
-// ZBUS channel definition
-ZBUS_CHAN_DEFINE(
-  eventsChannel,                           // Channel name
-  event_t,                                 // Message type
-  NULL,                                    // Validator function
-  NULL,                                    // User data
-  ZBUS_OBSERVERS(ZBUS_OBSERVERS_EMPTY),    // Initial observers list
-  ZBUS_MSG_INIT(.id = EVENT_INITIAL_VALUE) // Message initialization
-);
+// Import channel from the source file file
+ZBUS_CHAN_DECLARE(eventsChannel);
 
 #endif // EVENT_MANAGER_H

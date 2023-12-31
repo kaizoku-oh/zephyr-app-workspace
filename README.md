@@ -38,7 +38,7 @@ $ pip install -r deps/zephyr/scripts/requirements.txt
 (zephyr-app-workspace) $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 
 # Open vscode workspace
-(zephyr-app-workspace) $ code zephyr-linux.code-workspace
+(zephyr-app-workspace) $ code linux.code-workspace
 ```
 Once vscode is open you can run your workspace tasks like the following
 

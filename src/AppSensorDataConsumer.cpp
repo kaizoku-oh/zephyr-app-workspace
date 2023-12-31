@@ -6,9 +6,6 @@
 // User C++ class headers
 #include "EventManager.h"
 
-// Import channel from another file
-ZBUS_CHAN_DECLARE(eventsChannel);
-
 // Function declaration of thread handlers
 static void sensorDataConsumerThreadHandler();
 
@@ -56,11 +53,8 @@ static void sensorDataConsumerThreadHandler() {
               printk("Started sending sensor data to cloud");
 
               // Fake sending (to be replaced with real sending function)
-              for (size_t i = 0; i < 10; i++) {
-                printk(".");
-                k_msleep(500);
-              }
-              printk("\r\n");
+              k_msleep(5000);
+              printk("\r\n===========================================================\r\n");
 
               // Publish the <EVENT_SENSOR_DATA_SENT> event on <eventsChannel>
               event.id = EVENT_SENSOR_DATA_SENT;

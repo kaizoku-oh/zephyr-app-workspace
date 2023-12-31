@@ -1,3 +1,43 @@
+/*
+Usage example:
+
+// Lib C includes
+#include <stdbool.h>
+
+// Zephyr includes
+#include <zephyr/kernel.h>
+#include <zephyr/sys/printk.h>
+
+// User C++ class headers
+#include "Network.h"
+
+// Thread handler function declaration
+static void networkThreadHandler();
+
+// Delay value used inside thread loops to yield back to scheduler
+static constexpr uint32_t NETWORK_THREAD_SLEEP_TIME_MS = 100;
+
+// Threads definition
+K_THREAD_DEFINE(networkThread, 1024, networkThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+
+static void networkThreadHandler() {
+  // Get the singleton instance of Network
+  Network& network = Network::getInstance();
+
+  // Set up the lambda callback for IP address notification
+  network.onGotIP([](const char *ipAddress) {
+    printk("Got IP address: %s\r\n", ipAddress);
+  });
+
+  // Start the network and wait for an IP address
+  network.start();
+
+  while (true) {
+    k_msleep(NETWORK_THREAD_SLEEP_TIME_MS);
+  }
+}
+*/
+
 #ifndef NETWORK_H
 #define NETWORK_H
 
