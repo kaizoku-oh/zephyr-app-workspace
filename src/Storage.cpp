@@ -52,22 +52,16 @@ Storage::Storage() {
 Storage::~Storage() {
 }
 
-int Storage::read(uint16_t id, uint8_t *buffer, size_t length) {
+int Storage::read(uint16_t id, void *buffer, size_t length) {
   int ret = 0;
 
   // Read an entry by its id from the NVS file system
   ret = nvs_read(&this->fs, id, buffer, sizeof(buffer));
-  if (ret > 0) {
-    LOG_DBG("Found it (%d bytes)!\r\n", ret);
-    LOG_DBG("id: %d, value: %.*s\r\n", id, ret, buffer);
-  } else {
-    LOG_DBG("id %d not found in NVS!\r\n", id);
-  }
 
   return ret;
 }
 
-int Storage::write(uint16_t id, uint8_t *data, size_t length) {
+int Storage::write(uint16_t id, void *data, size_t length) {
   int ret = 0;
 
   // Write an entry by its id to the NVS file system

@@ -6,6 +6,8 @@ LOG_MODULE_REGISTER(AppSensorDataConsumer);
 
 // User C++ class headers
 #include "EventManager.h"
+#include "Storage.h"
+#include "HttpClient.h"
 
 // Function declaration of thread handlers
 static void sensorDataConsumerThreadHandler();
@@ -17,7 +19,7 @@ ZBUS_SUBSCRIBER_DEFINE(sensorDataConsumerSubscriber, 4);
 ZBUS_CHAN_ADD_OBS(eventsChannel, sensorDataConsumerSubscriber, 4);
 
 // Thread definition
-K_THREAD_DEFINE(sensorDataConsumerThread, 1024, sensorDataConsumerThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(sensorDataConsumerThread, 4096, sensorDataConsumerThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 static void sensorDataConsumerThreadHandler() {
   int ret = 0;
@@ -27,6 +29,17 @@ static void sensorDataConsumerThreadHandler() {
 
   // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
+
+  // Variables to hold temperature reading in Celsius
+  char temperatureString[6] = {0};
+  char jsonArray[128] = {0};
+  int jsonStringOffset = 0;
+
+  // Get the Storage instance
+  Storage& storage = Storage::getInstance();
+
+  // Create an HTTP client as a local object
+  HttpClient client((char *)"192.168.1.22", 1880);
 
   while (true) {
 
@@ -53,13 +66,46 @@ static void sensorDataConsumerThreadHandler() {
             case EVENT_SENSOR_DATA_SAVED: {
               LOG_INF("Started sending sensor data to cloud");
 
-              // Fake sending (to be replaced with real sending function)
-              k_msleep(5000);
-              LOG_INF("\r\n===========================================================\r\n");
+              // Read 8 temperature strings from storage and append them to the JSON string
+              jsonStringOffset = 0;
+              jsonStringOffset += snprintf(jsonArray + jsonStringOffset,
+                                           sizeof(jsonArray) - jsonStringOffset,
+                                           "{\"temperature\":[");
+              for (uint16_t readingID = 0; readingID < 8; readingID++) {
+                ret = storage.read(readingID, temperatureString, sizeof(temperatureString));
+                if (ret < 0) {
+                  LOG_ERR("Failed to read temperature reading (id=%d) from storage\r\n", readingID);
+                  break;
+                }
+                LOG_INF("Read temperatureReading %d: %s °C", readingID, temperatureString);
+                jsonStringOffset += snprintf(jsonArray + jsonStringOffset,
+                                             sizeof(jsonArray) - jsonStringOffset,
+                                             "%s%s",
+                                             temperatureString,
+                                             (readingID < 7)?",":"");
+                k_msleep(1000);
+              }
+              jsonStringOffset += snprintf(jsonArray + jsonStringOffset,
+                                           sizeof(jsonArray) - jsonStringOffset,
+                                           "]}");
+              LOG_INF("jsonArray: %s", jsonArray);
 
-              // Publish the <EVENT_SENSOR_DATA_SENT> event on <eventsChannel>
-              event.id = EVENT_SENSOR_DATA_SENT;
-              zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+              // Send the readings to the cloud
+              client.post("/data" ,jsonArray, jsonStringOffset, [](uint8_t *response, uint32_t length) {
+                size_t index = 0;
+                event_t event = {.id = EVENT_SENSOR_DATA_SENT};
+
+                // Skip headers by looking for the start of the json response
+                for (index = 0; index < length; index++) {
+                  if (response[index] == '{') {
+                    break;
+                  }
+                }
+                printk("\r\nResponse(%d bytes): %.*s\r\n", length-index, length-index, &response[index]);
+
+                // Publish the <EVENT_SENSOR_DATA_SENT> event on <eventsChannel>
+                zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+              });
 
               break;
             }

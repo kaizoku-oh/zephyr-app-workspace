@@ -1,11 +1,14 @@
 // Zephyr includes
 #include <zephyr/kernel.h>
+#include <zephyr/device.h>
 #include <zephyr/zbus/zbus.h>
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(AppSensorDataProducer);
 
 // User C++ class headers
 #include "EventManager.h"
+#include "Temperature.h"
+#include "Storage.h"
 
 // Function declaration of thread handlers
 static void sensorDataProducerThreadHandler();
@@ -27,6 +30,19 @@ static void sensorDataProducerThreadHandler() {
 
   // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
+
+  // Reference die temperature device from device tree
+  const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
+
+  // Create local object using the device
+  Temperature temperature(temperatureDevice);
+
+  // Variable to hold temperature reading in Celsius
+  double temperatureDouble = 0;
+  char temperatureString[6] = {0};
+
+  // Get the Storage instance
+  Storage& storage = Storage::getInstance();
 
   while (true) {
 
@@ -50,13 +66,30 @@ static void sensorDataProducerThreadHandler() {
           // Make sure the event is the one we are interested in
           switch (event.id) {
 
+            case EVENT_NETWORK_AVAILABLE:
             case EVENT_START_SENSOR_DATA_ACQUISITION:
             case EVENT_SENSOR_DATA_SENT: {
               LOG_INF("Started acquiring sensor data and saving it to storage");
 
-              // Fake acquisition (to be replaced with real sensor acquisition function)
-              k_msleep(5000);
-              LOG_INF("\r\n===========================================================\r\n");
+              // Take 8 readings and save them in storage
+              for (uint16_t readingID = 0; readingID < 8; readingID++) {
+
+                // Read temperature as a double
+                temperatureDouble = temperature.read();
+                LOG_INF("Saved temperatureDouble %d: %.1f °C", readingID, temperatureDouble);
+
+                // Convert temperature to a string
+                ret = snprintf(temperatureString, sizeof(temperatureString), "%.2f", temperatureDouble);
+                LOG_INF("Saved temperatureString %d: %.*s °C", readingID, sizeof(temperatureString), temperatureString);
+
+                // Save reading in storage
+                ret = storage.write(readingID, &temperatureString, sizeof(temperatureString));
+                if (ret < 0) {
+                  LOG_ERR("Failed to save temperature reading (id=%d) in storage\r\n", readingID);
+                  break;
+                }
+                k_msleep(1000);
+              }
 
               // Publish the <EVENT_SENSOR_DATA_SAVED> event on <eventsChannel>
               event.id = EVENT_SENSOR_DATA_SAVED;

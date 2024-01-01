@@ -34,7 +34,7 @@ static const char *EVENT_NAMES[] = {
   [EVENT_MAX_VALUE]                     = "EVENT_MAX_VALUE"
 };
 
-// Import channel from the source file file
+// Import channel from the source file
 ZBUS_CHAN_DECLARE(eventsChannel);
 
 #endif // EVENT_MANAGER_H

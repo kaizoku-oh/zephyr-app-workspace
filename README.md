@@ -11,16 +11,16 @@ This repo can be used as a template and a playground for experimenting with a st
 ## 🚀 Getting started
 
 ```bash
-# Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
-$ cd workspace
-
 # Setup python virtual environment
 $ export PIPENV_VENV_IN_PROJECT=1
 $ mkdir .venv
 $ touch Pipfile
 $ pipenv shell
 $ pip install -r deps/zephyr/scripts/requirements.txt
+
+# Initialize workspace for the app (main branch)
+$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
+$ cd workspace
 
 # Update Zephyr modules
 (zephyr-app-workspace) $ west update
@@ -88,7 +88,7 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add HTTP client class
 
-- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+- [x] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
 
 - [ ] Run app in Renode
 

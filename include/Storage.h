@@ -48,6 +48,37 @@ static void storageThreadHandler() {
     printk("Failed to read data from NVS\r\n");
   }
 
+  // Save double in storage but first covert it to string
+  int ret = 0;
+  double piNumber = 3.14;
+  char piString[6] = {0};
+  char jsonString[32] = {0};
+
+  printk("sizeof(piNumber) = %d\r\n", sizeof(piNumber));
+
+  ret = snprintf(piString, sizeof(piString), "%.2f", piNumber);
+
+  // Write data to NVS
+  ret = storage.write(0, piString, sizeof(piString));
+  if (ret > 0) {
+    printk("Data written successfully to NVS!\r\n");
+  } else {
+    printk("Failed to write data to NVS\r\n");
+  }
+
+  // Read data from NVS
+  memset(piString, 0x00, sizeof(piString));
+  ret = storage.read(0, piString, sizeof(piString));
+  if (ret > 0) {
+    printk("Data read successfully from NVS: %.*s\r\n", sizeof(piString), piString);
+  } else {
+    printk("Failed to read data from NVS\r\n");
+  }
+
+  ret = snprintf(jsonString, sizeof(jsonString), "{\"pi\": %s}", piString);
+
+  printk("jsonString = %s", jsonString);
+
   while (true) {
     k_msleep(STORAGE_THREAD_SLEEP_TIME_MS);
   }
@@ -67,8 +98,8 @@ public:
   // Static method to access the singleton instance
   static Storage& getInstance();
 
-  int read(uint16_t id, uint8_t *buffer, size_t length);
-  int write(uint16_t id, uint8_t *data, size_t length);
+  int read(uint16_t id, void *buffer, size_t length);
+  int write(uint16_t id, void *data, size_t length);
   int remove(uint16_t id);
   int clear();
 
