@@ -12,17 +12,18 @@ LOG_MODULE_REGISTER(main);
 // User C++ class headers
 #include "EventManager.h"
 #include "Network.h"
-#include "Storage.h"
 
-// Delay values used inside thread loops to yield back to scheduler
+// Delay value used inside the thread loop to yield back to the scheduler
 static constexpr uint32_t MAIN_THREAD_SLEEP_TIME_MS = 1000;
 
 int main(void) {
+
   // Get the singleton instance of Network
   Network& network = Network::getInstance();
 
   // Set up the lambda callback for IP address notification
   network.onGotIP([](const char *ipAddress) {
+
     // Initialize local variable to hold the event
     event_t event = {.id = EVENT_START_SENSOR_DATA_ACQUISITION};
 

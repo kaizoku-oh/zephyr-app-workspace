@@ -34,6 +34,7 @@ static void sensorDataConsumerThreadHandler() {
   char temperatureString[6] = {0};
   char jsonArray[128] = {0};
   int jsonStringOffset = 0;
+  uint16_t readingID = 0;
 
   // Get the Storage instance
   Storage& storage = Storage::getInstance();
@@ -54,7 +55,9 @@ static void sensorDataConsumerThreadHandler() {
 
         // Read the event
         ret = zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
+
         if (ret == 0) {
+
           LOG_DBG("Subscriber <%s> received event <%s> on <%s>\r\n",
                   sensorDataConsumerSubscriber.name,
                   EVENT_ID_TO_STRING(event.id),
@@ -67,11 +70,13 @@ static void sensorDataConsumerThreadHandler() {
               LOG_INF("Started sending sensor data to cloud");
 
               // Read 8 temperature strings from storage and append them to the JSON string
+              // The final JSON string should be something like the following:
+              // {"temperature":[20.4, 20.32, 21.9, 22.51, 21.33, 20.65, 21.78, 20.8]}
               jsonStringOffset = 0;
               jsonStringOffset += snprintf(jsonArray + jsonStringOffset,
                                            sizeof(jsonArray) - jsonStringOffset,
                                            "{\"temperature\":[");
-              for (uint16_t readingID = 0; readingID < 8; readingID++) {
+              for (readingID = 0; readingID < 8; readingID++) {
                 ret = storage.read(readingID, temperatureString, sizeof(temperatureString));
                 if (ret < 0) {
                   LOG_ERR("Failed to read temperature reading (id=%d) from storage\r\n", readingID);
@@ -90,12 +95,12 @@ static void sensorDataConsumerThreadHandler() {
                                            "]}");
               LOG_INF("jsonArray: %s", jsonArray);
 
-              // Send the readings to the cloud
-              client.post("/data" ,jsonArray, jsonStringOffset, [](uint8_t *response, uint32_t length) {
+              // Send the readings to the HTTP server
+              client.post("/data", jsonArray, jsonStringOffset, [](uint8_t *response, uint32_t length) {
                 size_t index = 0;
                 event_t event = {.id = EVENT_SENSOR_DATA_SENT};
 
-                // Skip headers by looking for the start of the json response
+                // Skip headers by looking for the start of the response body: '{'
                 for (index = 0; index < length; index++) {
                   if (response[index] == '{') {
                     break;

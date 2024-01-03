@@ -31,15 +31,15 @@ static void sensorDataProducerThreadHandler() {
   // Used to figure out on which channel the event came from
   const struct zbus_channel *channel = NULL;
 
+  // Variable to hold temperature reading in Celsius
+  double temperatureDouble = 0;
+  char temperatureString[6] = {0};
+
   // Reference die temperature device from device tree
   const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 
   // Create local object using the device
   Temperature temperature(temperatureDevice);
-
-  // Variable to hold temperature reading in Celsius
-  double temperatureDouble = 0;
-  char temperatureString[6] = {0};
 
   // Get the Storage instance
   Storage& storage = Storage::getInstance();
@@ -57,7 +57,9 @@ static void sensorDataProducerThreadHandler() {
 
         // Read the event
         ret = zbus_chan_read(&eventsChannel, &event, K_NO_WAIT);
+
         if (ret == 0) {
+
           LOG_DBG("Subscriber <%s> received event <%s> on <%s>\r\n",
                   sensorDataProducerSubscriber.name,
                   EVENT_ID_TO_STRING(event.id),
