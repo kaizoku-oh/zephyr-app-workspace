@@ -15,12 +15,17 @@ This repo can be used as a template and a playground for experimenting with a st
 $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
 $ cd workspace
 
-# Create python virtual environment
+# Create a directory for zephyr projects and switch to it
+$ mkdir zephyr-projects
+$ cd zephyr-projects
+
+# Create python virtual environment there
 $ python3 -m venv zephyr-venv
 
 # Activate it
 $ source venv/bin/activate
 
+# Install python dependencies for zephyr and mcuboot
 (zephyr-venv) $ python -m pip install -r deps/zephyr/scripts/requirements.txt
 (zephyr-venv) $ python -m pip install -r deps/bootloader/mcuboot/scripts/requirements.txt
 
