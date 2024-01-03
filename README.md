@@ -11,13 +11,13 @@ This repo can be used as a template and a playground for experimenting with a st
 ## 🚀 Getting started
 
 ```bash
-# Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
-$ cd workspace
-
 # Create a directory for zephyr projects and switch to it
 $ mkdir zephyr-projects
 $ cd zephyr-projects
+
+# Initialize workspace for the app (main branch)
+$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
+$ cd workspace
 
 # Create python virtual environment there
 $ python3 -m venv zephyr-venv
