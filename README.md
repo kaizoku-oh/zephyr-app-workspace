@@ -19,21 +19,21 @@ $ cd zephyr-projects
 $ python3 -m venv zephyr-venv
 
 # Activate it
-$ source venv/bin/activate
+$ source zephyr-venv/bin/activate
 
 # Install west
 (zephyr-venv) $ pip install west
 
 # Initialize workspace for the app (main branch)
-(zephyr-venv) $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
-(zephyr-venv) $ cd workspace
+(zephyr-venv) $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main app-workspace
+(zephyr-venv) $ cd app-workspace
+
+# Update Zephyr modules
+(zephyr-venv) $ west update
 
 # Install python dependencies for zephyr and mcuboot
 (zephyr-venv) $ python -m pip install -r deps/zephyr/scripts/requirements.txt
 (zephyr-venv) $ python -m pip install -r deps/bootloader/mcuboot/scripts/requirements.txt
-
-# Update Zephyr modules
-(zephyr-venv) $ west update
 
 # Copy vscode workspace file from the app to the outer workspace directory
 (zephyr-venv) $ cp app/linux.code-workspace .
