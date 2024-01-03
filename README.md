@@ -11,34 +11,36 @@ This repo can be used as a template and a playground for experimenting with a st
 ## 🚀 Getting started
 
 ```bash
-# Setup python virtual environment
-$ export PIPENV_VENV_IN_PROJECT=1
-$ mkdir .venv
-$ touch Pipfile
-$ pipenv shell
-$ pip install -r deps/zephyr/scripts/requirements.txt
-
 # Initialize workspace for the app (main branch)
 $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
 $ cd workspace
 
+# Create python virtual environment
+$ python3 -m venv zephyr-venv
+
+# Activate it
+$ source venv/bin/activate
+
+(zephyr-venv) $ python -m pip install -r deps/zephyr/scripts/requirements.txt
+(zephyr-venv) $ python -m pip install -r deps/bootloader/mcuboot/scripts/requirements.txt
+
 # Update Zephyr modules
-(zephyr-app-workspace) $ west update
+(zephyr-venv) $ west update
 
 # Copy vscode workspace file from the app to the outer workspace directory
-(zephyr-app-workspace) $ cp app/linux.code-workspace .
+(zephyr-venv) $ cp app/linux.code-workspace .
 
 # Build the app
-(zephyr-app-workspace) $ west build app -d app/build -b nucleo_f767zi
+(zephyr-venv) $ west build app -d app/build -b nucleo_f767zi
 
 # Turn on compilation database
-(zephyr-app-workspace) $ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+(zephyr-venv) $ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 # Retrieve `ZEPHYR_SDK_INSTALL_DIR`
-(zephyr-app-workspace) $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
+(zephyr-venv) $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
 
 # Open vscode workspace
-(zephyr-app-workspace) $ code linux.code-workspace
+(zephyr-venv) $ code linux.code-workspace
 ```
 Once vscode is open you can run your workspace tasks like the following
 
