@@ -107,17 +107,31 @@ Once vscode is open you can run your workspace tasks.
 
 - [x] Build project with MCUBoot
 
+- [ ] Download a binary file with HTTP client
+
+- [ ] Boot on the new image after downloading the binary file
+
+- [ ] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
+
+- [ ] Solve the Shared Callback Registration problem in the Network class
+
+- [ ] Add application events manager using zbus
+
+- [ ] Add a script to download and setup the project (intellisense, structure, venv...)
+
+- [ ] Automate updating the README.md Build footprint table automatically by running a post build
+
+- [ ] Add asserts on arguments for all user class methods
+
+- [ ] Add thread safety to user classes
+
 - [ ] Run app in Renode
 
 - [ ] Add configurable vscode tasks
 
 - [ ] Integrate Renode + robot in the CI workflow
 
-- [ ] Solve the Shared Callback Registration problem in the Network class
-
 - [ ] Add native simulator to vscode build task
-
-- [ ] Add a script to download and setup the project (intellisense, structure, venv...)
 
 - [ ] Add static code analysis with CodeChecker
 
@@ -129,13 +143,7 @@ Once vscode is open you can run your workspace tasks.
 
 - [ ] Add HIL tests using GitHub local runner
 
-- [ ] Add application events manager using zbus
-
-- [ ] Automate updating the README.md Build footprint table automatically by running a post build
-
 - [ ] Add debouncing mechanism to Button class
-
-- [ ] Add OTA update example
 
 - [ ] Add lambda callback to Button class
 
