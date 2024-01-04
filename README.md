@@ -55,7 +55,7 @@ $ source zephyr-venv/bin/activate
 ```
 Once vscode is open you can run your workspace tasks.
 
-## 🔨 Build footprint for NUCLEO-F767ZI
+## 🔨 Application footprint for NUCLEO-F767ZI
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
@@ -63,6 +63,16 @@ Once vscode is open you can run your workspace tasks.
 | RAM           | 57120  B    | 384 KB      | 14.53%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
+| IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
+
+## 🔨 Bootloader footprint for NUCLEO-F767ZI
+
+| Memory region | Used Size   | Region Size | %age Used   |
+| ------------- | ----------- | ----------- | ----------- |
+| FLASH         | 32706  B    | 64  KB      | 49.91%      |
+| RAM           | 24320  B    | 384 KB      | 6.18%       |
+| QSPI          | 0     GB    | 256 MB      | 0.00%       |
+| DTCM          | 0      B    | 128 KB      | 0.00%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
 
 ## ✅ ToDo
