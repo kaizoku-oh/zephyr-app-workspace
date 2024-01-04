@@ -20,7 +20,12 @@ jobs:
           cd workspace
           west update
 
-      - name: Build firmware
+      - name: Build bootloader
+        working-directory: workspace
+        run: |
+          west build deps/bootloader/mcuboot/boot/zephyr -d deps/bootloader/mcuboot/boot/zephyr/build -b nucleo_f767zi
+
+      - name: Build application
         working-directory: workspace
         run: |
           west build app -d app/build -b nucleo_f767zi

@@ -19,18 +19,40 @@
 		"version": "2.0.0",
 		"tasks": [
 			{
-				"label": "Build",
+				"label": "Build (application)",
 				"type": "shell",
 				"group": {
 					"kind": "build",
 					"isDefault": true
 				},
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
+					"-p",
+					"auto",
+					"-b",
+					"nucleo_f767zi"
+				],
+				"problemMatcher": [
+					"$gcc"
+				],
+			},
+			{
+				"label": "Build (bootloader)",
+				"type": "shell",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"command": "west",
+				"args": [
+					"build",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr",
+					"-d",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
 					"-p",
 					"auto",
 					"-b",
@@ -46,11 +68,11 @@
 				"group": {
 					"kind": "build",
 				},
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",
@@ -62,20 +84,7 @@
 				]
 			},
 			{
-				"label": "Flash",
-				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
-				"args": [
-					"flash",
-					"-d",
-					"${workspaceFolder}/app/build",
-				],
-				"problemMatcher": [
-					"$gcc"
-				]
-			},
-			{
-				"label": "Clean",
+				"label": "Clean (application)",
 				"type": "shell",
 				"command": "rm",
 				"args": [
@@ -87,7 +96,77 @@
 				]
 			},
 			{
-				"label": "Erase",
+				"label": "Clean (bootloader)",
+				"type": "shell",
+				"command": "rm",
+				"args": [
+					"-rf",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (west app)",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/app/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (west boot)",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer app)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"app/build/zephyr/zephyr.bin",
+					"0x08040000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer boot)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"deps/bootloader/mcuboot/boot/zephyr/build/zephyr/zephyr.bin",
+					"0x08000000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Erase (STM32CubeProgrammer)",
 				"type": "shell",
 				"command": "STM32_Programmer_CLI",
 				"args": [
@@ -103,7 +182,7 @@
 			{
 				"label": "Update",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"update"
 				]
@@ -111,11 +190,11 @@
 			{
 				"label": "MenuConfig",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",

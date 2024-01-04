@@ -1,4 +1,4 @@
-# Standalone Zephyr application
+# Standalone Zephyr application template
 
 [![GitHub Build workflow status](https://github.com/kaizoku-oh/zephyr-app-workspace/workflows/Build/badge.svg)](https://github.com/kaizoku-oh/zephyr-app-workspace/actions/workflows/build.yaml)
 [![GitHub release](https://img.shields.io/github/v/release/kaizoku-oh/zephyr-app-workspace)](https://github.com/kaizoku-oh/zephyr-app-workspace/releases)
@@ -11,48 +11,68 @@ This repo can be used as a template and a playground for experimenting with a st
 ## 🚀 Getting started
 
 ```bash
+# Create a directory for zephyr projects and switch to it
+$ mkdir zephyr-projects
+$ cd zephyr-projects
+
+# Create python virtual environment there
+$ python3 -m venv zephyr-venv
+
+# Activate it
+$ source zephyr-venv/bin/activate
+
+# Install west
+(zephyr-venv) $ pip install west
+
 # Initialize workspace for the app (main branch)
-$ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
-$ cd workspace
+(zephyr-venv) $ west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main app-workspace
+(zephyr-venv) $ cd app-workspace
 
 # Update Zephyr modules
-$ west update
+(zephyr-venv) $ west update
 
-# Copy vscode workspace file from the app to the outer workspace directory
-$ Copy-Item –Path app/zephyr-windows.code-workspace -Destination .
+# Install python dependencies for zephyr and mcuboot
+(zephyr-venv) $ python -m pip install -r deps/zephyr/scripts/requirements.txt
+(zephyr-venv) $ python -m pip install -r deps/bootloader/mcuboot/scripts/requirements.txt
+
+# Build the bootloader (mcuboot)
+(zephyr-venv) $ west build deps/bootloader/mcuboot/boot/zephyr -d deps/bootloader/mcuboot/boot/zephyr/build -b nucleo_f767zi
+
+# Flash the bootloader (mcuboot)
+(zephyr-venv) $ west flash -d deps/bootloader/mcuboot/boot/zephyr/build
 
 # Build the app
-$ west build app -d app/build -b nucleo_f767zi
+(zephyr-venv) $ west build app -d app/build -b nucleo_f767zi
 
-# Turn on compilation database
-$ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# Flash the app
+(zephyr-venv) $ west flash -d app/build
 
-# Retrieve `ZEPHYR_SDK_INSTALL_DIR`
-$ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
+# Copy vscode workspace file from the app to the outer workspace directory
+(zephyr-venv) $ cp app/linux.code-workspace .
 
 # Open vscode workspace
-$ code zephyr-windows.code-workspace
+(zephyr-venv) $ code linux.code-workspace
 ```
-Once vscode is open you can run your workspace tasks like the following
+Once vscode is open you can run your workspace tasks.
 
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
-
-You can run the tasks in the following order Clean => Build => Erase => Flash
-
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
-
-Once the app is flashed open a serial monitor like PuTTY and reset your board.
-
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
-
-## 🔨 Build footprint for NUCLEO-F767ZI
+## 🔨 Application footprint for NUCLEO-F767ZI
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 186096 B    | 768 KB      | 23.66%      |
-| RAM           | 65648  B    | 384 KB      | 16.70%      |
+| FLASH         | 186206 B    | 768 KB      | 23.68%      |
+| RAM           | 57120  B    | 384 KB      | 14.53%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
+| IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
+
+## 🔨 Bootloader footprint for NUCLEO-F767ZI
+
+| Memory region | Used Size   | Region Size | %age Used   |
+| ------------- | ----------- | ----------- | ----------- |
+| FLASH         | 32706  B    | 64  KB      | 49.91%      |
+| RAM           | 24320  B    | 384 KB      | 6.18%       |
+| QSPI          | 0     GB    | 256 MB      | 0.00%       |
+| DTCM          | 0      B    | 128 KB      | 0.00%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
 
 ## ✅ ToDo
@@ -81,17 +101,17 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add HTTP client class
 
-- [ ] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+- [x] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
+
+- [x] Add vscode dev container environment
+
+- [x] Build project with MCUBoot
 
 - [ ] Run app in Renode
 
 - [ ] Add configurable vscode tasks
 
-- [x] Add vscode dev container environment
-
 - [ ] Integrate Renode + robot in the CI workflow
-
-- [ ] Build project with MCUBoot
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
 

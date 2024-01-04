@@ -1,24 +1,27 @@
+// Zephyr includes
 #include <zephyr/drivers/gpio.h>
-#include <zephyr/sys/printk.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(Button);
 
+// User C++ class headers
 #include "Button.h"
 
 Button::Button(const struct gpio_dt_spec *gpio) {
 
   if (gpio == NULL) {
-    printk("Error: Invalid argument\r\n");
+    LOG_ERR("Error: Invalid argument\r\n");
     return;
   }
 
   this->_device = gpio;
 
   if (!gpio_is_ready_dt(gpio)) {
-    printk("Error: button device %s is not ready\n", gpio->port->name);
+    LOG_ERR("Error: button device %s is not ready\n", gpio->port->name);
     return;
   }
 
   if (gpio_pin_configure_dt(gpio, GPIO_INPUT) != 0) {
-    printk("Error: Failed to configure %s pin %d\n", gpio->port->name, gpio->pin);
+    LOG_ERR("Error: Failed to configure %s pin %d\n", gpio->port->name, gpio->pin);
     return;
   }
 }

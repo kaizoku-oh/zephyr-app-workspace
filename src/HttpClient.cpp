@@ -1,9 +1,11 @@
-#include <zephyr/sys/printk.h>
-
+// Zephyr includes
 #include <zephyr/net/net_ip.h>
 #include <zephyr/net/socket.h>
 #include <zephyr/net/http/client.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(HttpClient);
 
+// User C++ class headers
 #include "HttpClient.h"
 
 static void httpResponseCallback(struct http_response *response,
@@ -33,11 +35,11 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
   if (this->sock < 0) {
-    printk("Failed to create HTTP socket (%d)\r\n", -errno);
+    LOG_ERR("Failed to create HTTP socket (%d)\r\n", -errno);
   }
 
   if (callback == nullptr) {
-    printk("Failed to register callback\r\n");
+    LOG_ERR("Failed to register callback\r\n");
     ret = -errno;
     return ret;
   }
@@ -47,7 +49,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   // 1. Open TCP connection
   ret = connect(this->sock, &this->socketAddress, sizeof(this->socketAddress));
   if (ret < 0) {
-    printk("Cannot connect to remote (%d)", -errno);
+    LOG_ERR("Cannot connect to remote (%d)", -errno);
     ret = -errno;
     return ret;
   }
@@ -62,7 +64,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   request.recv_buf_len = sizeof(this->httpResponseBuffer);
   ret = http_client_req(this->sock, &request, 5000, (void *)&this->callback);
   if (ret < 0) {
-    printk("Error sending GET request\r\n");
+    LOG_ERR("Error sending GET request\r\n");
     ret = -errno;
     return ret;
   }
@@ -88,11 +90,11 @@ int HttpClient::post(const char *endpoint,
   this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
   if (this->sock < 0) {
-    printk("Failed to create HTTP socket (%d)\r\n", -errno);
+    LOG_ERR("Failed to create HTTP socket (%d)\r\n", -errno);
   }
 
   if (callback == nullptr) {
-    printk("Failed to register callback\r\n");
+    LOG_ERR("Failed to register callback\r\n");
     ret = -errno;
     return ret;
   }
@@ -102,7 +104,7 @@ int HttpClient::post(const char *endpoint,
   // 1. Open TCP connection
   ret = connect(this->sock, &this->socketAddress, sizeof(this->socketAddress));
   if (ret < 0) {
-    printk("Cannot connect to remote (%d)", -errno);
+    LOG_ERR("Cannot connect to remote (%d)", -errno);
     ret = -errno;
     return ret;
   }
@@ -119,7 +121,7 @@ int HttpClient::post(const char *endpoint,
   request.recv_buf_len = sizeof(this->httpResponseBuffer);
   ret = http_client_req(this->sock, &request, 5000, (void *)this);
   if (ret < 0) {
-    printk("Error sending POST request\r\n");
+    LOG_ERR("Error sending POST request\r\n");
     ret = -errno;
     return ret;
   }
@@ -136,18 +138,18 @@ static void httpResponseCallback(struct http_response *response,
   HttpClient *httpClientInstance = nullptr;
 
   if (userData == nullptr) {
-    printk("Invalid callback parameters\r\n");
+    LOG_ERR("Invalid callback parameters\r\n");
     return;
   }
 
   httpClientInstance = static_cast<HttpClient *>(userData);
 
   if (finalData == HTTP_DATA_MORE) {
-    printk("Partial data received (%zd bytes)", response->data_len);
+    LOG_DBG("Partial data received (%zd bytes)", response->data_len);
   } else if (finalData == HTTP_DATA_FINAL) {
-    printk("All the data received (%zd bytes)", response->data_len);
+    LOG_DBG("All the data received (%zd bytes)", response->data_len);
   }
-  printk("Response status %s", response->http_status);
+  LOG_DBG("Response status %s", response->http_status);
 
   if (httpClientInstance->callback) {
     httpClientInstance->callback(response->recv_buf, response->data_len);
