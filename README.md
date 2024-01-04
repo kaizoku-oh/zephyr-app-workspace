@@ -35,32 +35,25 @@ $ source zephyr-venv/bin/activate
 (zephyr-venv) $ python -m pip install -r deps/zephyr/scripts/requirements.txt
 (zephyr-venv) $ python -m pip install -r deps/bootloader/mcuboot/scripts/requirements.txt
 
-# Copy vscode workspace file from the app to the outer workspace directory
-(zephyr-venv) $ cp app/linux.code-workspace .
+# Build the bootloader (mcuboot)
+(zephyr-venv) $ west build deps/bootloader/mcuboot/boot/zephyr -d deps/bootloader/mcuboot/boot/zephyr/build -b nucleo_f767zi
+
+# Flash the bootloader (mcuboot)
+(zephyr-venv) $ west flash -d deps/bootloader/mcuboot/boot/zephyr/build
 
 # Build the app
 (zephyr-venv) $ west build app -d app/build -b nucleo_f767zi
 
-# Turn on compilation database
-(zephyr-venv) $ west config build.cmake-args -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# Flash the app
+(zephyr-venv) $ west flash -d app/build
 
-# Retrieve `ZEPHYR_SDK_INSTALL_DIR`
-(zephyr-venv) $ cmake -P deps/zephyr/cmake/verify-toolchain.cmake
+# Copy vscode workspace file from the app to the outer workspace directory
+(zephyr-venv) $ cp app/linux.code-workspace .
 
 # Open vscode workspace
 (zephyr-venv) $ code linux.code-workspace
 ```
-Once vscode is open you can run your workspace tasks like the following
-
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/b1eca6ce-78d9-469e-8675-fe2e84a79f1e)
-
-You can run the tasks in the following order Clean => Build => Erase => Flash
-
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/08cda574-0ea5-4c34-8598-d53e3c5c96de)
-
-Once the app is flashed open a serial monitor like PuTTY and reset your board.
-
-![image](https://github.com/kaizoku-oh/zephyr-app-workspace/assets/22129291/d1f073a3-197b-40f9-8e73-649a705cd287)
+Once vscode is open you can run your workspace tasks.
 
 ## 🔨 Build footprint for NUCLEO-F767ZI
 
@@ -100,15 +93,15 @@ Once the app is flashed open a serial monitor like PuTTY and reset your board.
 
 - [x] Add an IoT app that reads die temperature, store it in NVS, retrieve it, format it then send it
 
+- [x] Add vscode dev container environment
+
+- [x] Build project with MCUBoot
+
 - [ ] Run app in Renode
 
 - [ ] Add configurable vscode tasks
 
-- [x] Add vscode dev container environment
-
 - [ ] Integrate Renode + robot in the CI workflow
-
-- [ ] Build project with MCUBoot
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
 
