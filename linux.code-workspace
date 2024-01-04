@@ -25,11 +25,11 @@
 					"kind": "build",
 					"isDefault": true
 				},
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",
@@ -47,11 +47,11 @@
 					"kind": "build",
 					"isDefault": true
 				},
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
 					"-p",
 					"auto",
@@ -68,11 +68,11 @@
 				"group": {
 					"kind": "build",
 				},
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",
@@ -110,7 +110,7 @@
 			{
 				"label": "Flash (west app)",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"flash",
 					"-d",
@@ -123,7 +123,7 @@
 			{
 				"label": "Flash (west boot)",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"flash",
 					"-d",
@@ -182,7 +182,7 @@
 			{
 				"label": "Update",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"update"
 				]
@@ -190,11 +190,11 @@
 			{
 				"label": "MenuConfig",
 				"type": "shell",
-				"command": "${workspaceFolder}/.venv/bin/west",
+				"command": "west",
 				"args": [
 					"build",
 					"${workspaceFolder}/app",
-					"--build-dir",
+					"-d",
 					"${workspaceFolder}/app/build",
 					"-p",
 					"auto",

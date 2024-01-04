@@ -14,7 +14,7 @@
             "args": [
                 "build",
                 "${workspaceFolder}/app",
-                "--build-dir",
+                "-d",
                 "${workspaceFolder}/app/build",
                 "-p",
                 "auto",
@@ -36,7 +36,7 @@
             "args": [
                 "build",
                 "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr",
-                "--build-dir",
+                "-d",
                 "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
                 "-p",
                 "auto",
@@ -57,7 +57,7 @@
             "args": [
                 "build",
                 "${workspaceFolder}/app",
-                "--build-dir",
+                "-d",
                 "${workspaceFolder}/app/build",
                 "-p",
                 "auto",
@@ -179,7 +179,7 @@
             "args": [
                 "build",
                 "${workspaceFolder}/app",
-                "--build-dir",
+                "-d",
                 "${workspaceFolder}/app/build",
                 "-p",
                 "auto",

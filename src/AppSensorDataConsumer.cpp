@@ -40,7 +40,7 @@ static void sensorDataConsumerThreadHandler() {
   Storage& storage = Storage::getInstance();
 
   // Create an HTTP client as a local object
-  HttpClient client((char *)"192.168.1.22", 1880);
+  HttpClient client((char *)"192.168.43.145", 1880);
 
   while (true) {
 
