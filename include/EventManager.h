@@ -34,7 +34,7 @@ static const char *EVENT_NAMES[] = {
   [EVENT_MAX_VALUE]                     = "EVENT_MAX_VALUE"
 };
 
-// Import channel from the source file
+// Import channel and make it exportable by just including "EventManager.h"
 ZBUS_CHAN_DECLARE(eventsChannel);
 
 #endif // EVENT_MANAGER_H
