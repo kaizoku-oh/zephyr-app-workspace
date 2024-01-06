@@ -256,7 +256,9 @@
 			"marus25.cortex-debug",
 			"plorefice.devicetree",
 			"PKief.material-icon-theme",
-			"streetsidesoftware.code-spell-checker"
+			"streetsidesoftware.code-spell-checker",
+			"eamodio.gitlens",
+			"nick-rudenko.back-n-forth"
 		]
 	}
 }

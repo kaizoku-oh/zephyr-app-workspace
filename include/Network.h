@@ -63,8 +63,8 @@ private:
 
   // Static member to hold the singleton instance
   static Network instance;
-  struct net_mgmt_event_callback _mgmtEventCb;
-  struct net_if *_netIface;
+  struct net_mgmt_event_callback mgmtEventCb;
+  struct net_if *netIface;
 };
 
 #endif // NETWORK_H

@@ -1,3 +1,6 @@
+// Lib C
+#include <assert.h>
+
 // Zephyr includes
 #include <zephyr/drivers/flash.h>
 #include <zephyr/storage/flash_map.h>
@@ -63,6 +66,9 @@ int Storage::read(uint16_t id, void *buffer, size_t length) {
 
 int Storage::write(uint16_t id, void *data, size_t length) {
   int ret = 0;
+
+  assert(data);
+  assert(length);
 
   // Write an entry by its id to the NVS file system
   ret = nvs_write(&this->fs, id, data, sizeof(data));

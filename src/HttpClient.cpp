@@ -1,3 +1,6 @@
+// Lib C
+#include <assert.h>
+
 // Zephyr includes
 #include <zephyr/net/net_ip.h>
 #include <zephyr/net/socket.h>
@@ -13,6 +16,9 @@ static void httpResponseCallback(struct http_response *response,
                                  void *userData);
 
 HttpClient::HttpClient(char *server, uint16_t port) {
+  assert(server);
+  assert(port);
+
   // 1. Initialize attributes
   this->sock = 0;
   this->server = server;
@@ -27,6 +33,9 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
   int ret = 0;
   struct http_request request = {0};
 
+  assert(endpoint);
+  assert(callback);
+
   // 0. Create socket
   memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
   net_sin(&this->socketAddress)->sin_family = AF_INET;
@@ -36,12 +45,6 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
 
   if (this->sock < 0) {
     LOG_ERR("Failed to create HTTP socket (%d)\r\n", -errno);
-  }
-
-  if (callback == nullptr) {
-    LOG_ERR("Failed to register callback\r\n");
-    ret = -errno;
-    return ret;
   }
 
   this->callback = callback;
@@ -82,6 +85,11 @@ int HttpClient::post(const char *endpoint,
   int ret = 0;
   struct http_request request = {0};
 
+  assert(endpoint);
+  assert(data);
+  assert(length);
+  assert(callback);
+
   // 0. Create socket
   memset((void *)&this->socketAddress, 0, sizeof(this->socketAddress));
   net_sin(&this->socketAddress)->sin_family = AF_INET;
@@ -91,12 +99,6 @@ int HttpClient::post(const char *endpoint,
 
   if (this->sock < 0) {
     LOG_ERR("Failed to create HTTP socket (%d)\r\n", -errno);
-  }
-
-  if (callback == nullptr) {
-    LOG_ERR("Failed to register callback\r\n");
-    ret = -errno;
-    return ret;
   }
 
   this->callback = callback;
@@ -137,10 +139,7 @@ static void httpResponseCallback(struct http_response *response,
                                  void *userData) {
   HttpClient *httpClientInstance = nullptr;
 
-  if (userData == nullptr) {
-    LOG_ERR("Invalid callback parameters\r\n");
-    return;
-  }
+  assert(userData);
 
   httpClientInstance = static_cast<HttpClient *>(userData);
 

@@ -1,3 +1,6 @@
+// Lib C
+#include <assert.h>
+
 // Zephyr includes
 #include <zephyr/net/net_core.h>
 #include <zephyr/net/net_context.h>
@@ -18,23 +21,20 @@ Network& Network::getInstance() {
 }
 
 Network::Network() {
-  net_mgmt_init_event_callback(&this->_mgmtEventCb, netMgmtCallback, NET_EVENT_IPV4_ADDR_ADD);
-  net_mgmt_add_event_callback(&this->_mgmtEventCb);
-  this->_netIface = net_if_get_default();
+  net_mgmt_init_event_callback(&this->mgmtEventCb, netMgmtCallback, NET_EVENT_IPV4_ADDR_ADD);
+  net_mgmt_add_event_callback(&this->mgmtEventCb);
+  this->netIface = net_if_get_default();
 }
 
 Network::~Network() {
 }
 
 void Network::start() {
-  net_dhcpv4_start(this->_netIface);
+  net_dhcpv4_start(this->netIface);
 }
 
 void Network::onGotIP(std::function<void(const char *)> callback) {
-  if (callback == nullptr) {
-    LOG_ERR("Failed to register callback\r\n");
-    return;
-  }
+  assert(callback);
 
   this->callback = callback;
 }

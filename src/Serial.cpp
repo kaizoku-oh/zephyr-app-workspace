@@ -1,3 +1,6 @@
+// Lib C
+#include <assert.h>
+
 // Zephyr includes
 #include <zephyr/device.h>
 #include <zephyr/drivers/uart.h>
@@ -7,13 +10,10 @@ LOG_MODULE_REGISTER(Serial);
 // User C++ class headers
 #include "Serial.h"
 
-static void serialCallback(const struct device *dev, void *userData);
+static void serialCallback(const struct device *device, void *userData);
 
 Serial::Serial(const struct device *device) {
-  if (device == NULL) {
-    LOG_ERR("Error: Invalid argument\r\n");
-    return;
-  }
+  assert(device);
 
   this->device = device;
 
@@ -32,10 +32,11 @@ Serial::~Serial() {
 void Serial::write(uint8_t *data, uint32_t length) {
   size_t index;
 
-  if (data && length) {
-    for (index = 0; index < length; index++) {
-      uart_poll_out(this->device, *data++);
-    }
+  assert(data);
+  assert(length);
+
+  for (index = 0; index < length; index++) {
+    uart_poll_out(this->device, *data++);
   }
 }
 
@@ -45,10 +46,7 @@ void Serial::read(uint8_t *data, uint32_t *length) {
 void Serial::onReceive(std::function<void(uint8_t*, uint32_t)> callback) {
   int ret;
 
-  if (callback == nullptr) {
-    LOG_ERR("Failed to register callback\r\n");
-    return;
-  }
+  assert(callback);
 
   this->callback = callback;
 
@@ -65,19 +63,17 @@ void Serial::onReceive(std::function<void(uint8_t*, uint32_t)> callback) {
   }
 }
 
-static void serialCallback(const struct device *dev, void *userData) {
+static void serialCallback(const struct device *device, void *userData) {
   Serial *serialInstance = nullptr;
   uint8_t rxByte = 0;
   int ret = 0;
 
-  if ((dev == nullptr) || (userData == nullptr)) {
-    LOG_ERR("Invalid callback parameters\r\n");
-    return;
-  }
+  assert(device);
+  assert(userData);
 
   serialInstance = static_cast<Serial *>(userData);
 
-  ret = uart_irq_update(dev);
+  ret = uart_irq_update(device);
   if (ret < 0) {
     if (ret == -ENOSYS) {
       LOG_ERR("uart_irq_update() function is not implemented\r\n");
@@ -87,7 +83,7 @@ static void serialCallback(const struct device *dev, void *userData) {
     return;
   }
 
-  ret = uart_irq_rx_ready(dev);
+  ret = uart_irq_rx_ready(device);
   if (ret < 0) {
     if (ret == -ENOSYS) {
       LOG_ERR("uart_irq_rx_ready() function is not implemented\r\n");
@@ -97,7 +93,7 @@ static void serialCallback(const struct device *dev, void *userData) {
     return;
   }
 
-  ret = uart_fifo_read(dev, &rxByte, sizeof(rxByte));
+  ret = uart_fifo_read(device, &rxByte, sizeof(rxByte));
   if (ret == 1) {
     if (serialInstance->callback) {
       serialInstance->callback(&rxByte, ret);

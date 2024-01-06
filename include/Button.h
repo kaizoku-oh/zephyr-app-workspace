@@ -44,15 +44,22 @@ static void buttonThreadHandler() {
 
 #include <stdbool.h>
 
+enum class Polarity {
+
+  NORMAL,
+  INVERTED
+
+};
+
 class Button {
 
 public:
   Button(const struct gpio_dt_spec *gpio);
   ~Button();
-  bool isPressed();
+  bool isPressed(Polarity polarity = Polarity::NORMAL);
 
 private:
-  const struct gpio_dt_spec *_device;
+  const struct gpio_dt_spec *device;
 
 };
 

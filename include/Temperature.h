@@ -51,7 +51,7 @@ public:
   double read();
 
 private:
-  const struct device *_device;
+  const struct device *device;
 
 };
 
