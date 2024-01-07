@@ -57,15 +57,15 @@ static constexpr uint32_t HTTP_CLIENT_RESPONSE_BUFFER_SIZE = 512;
 class HttpClient {
 
 public:
-  std::function<void(uint8_t *, uint32_t)> callback;
+  std::function<void(struct http_response *, enum http_final_call)> callback;
 
   HttpClient(char *server, uint16_t port);
   ~HttpClient();
-  int get(const char *endpoint, std::function<void(uint8_t *, uint32_t)> callback);
+  int get(const char *endpoint, std::function<void(struct http_response *, enum http_final_call)> callback);
   int post(const char *endpoint,
            const char *data,
            uint32_t length,
-           std::function<void(uint8_t *, uint32_t)> callback);
+           std::function<void(struct http_response *, enum http_final_call)> callback);
 
 private:
   int sock;

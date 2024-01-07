@@ -29,7 +29,7 @@ HttpClient::~HttpClient() {
   // Destructor is automatically called when the object goes out of scope or is explicitly deleted
 }
 
-int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t)> callback) {
+int HttpClient::get(const char *endpoint, std::function<void(struct http_response *, enum http_final_call)> callback) {
   int ret = 0;
   struct http_request request = {0};
 
@@ -81,7 +81,7 @@ int HttpClient::get(const char *endpoint, std::function<void(uint8_t *, uint32_t
 int HttpClient::post(const char *endpoint,
                      const char *data,
                      uint32_t length,
-                     std::function<void(uint8_t *, uint32_t)> callback) {
+                     std::function<void(struct http_response *, enum http_final_call)> callback) {
   int ret = 0;
   struct http_request request = {0};
 
@@ -151,6 +151,6 @@ static void httpResponseCallback(struct http_response *response,
   LOG_DBG("Response status %s", response->http_status);
 
   if (httpClientInstance->callback) {
-    httpClientInstance->callback(response->recv_buf, response->data_len);
+    httpClientInstance->callback(response, finalData);
   }
 }

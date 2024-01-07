@@ -258,7 +258,8 @@
 			"PKief.material-icon-theme",
 			"streetsidesoftware.code-spell-checker",
 			"eamodio.gitlens",
-			"nick-rudenko.back-n-forth"
+			"nick-rudenko.back-n-forth",
+			"ms-vscode.hexeditor"
 		]
 	}
 }
