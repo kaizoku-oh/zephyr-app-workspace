@@ -50,7 +50,7 @@ $ source zephyr-venv/bin/activate
 # Copy vscode workspace file from the app to the outer workspace directory
 (zephyr-venv) $ cp app/linux.code-workspace .
 
-# Open vscode workspace
+# Open vscode workspace from within the python venv
 (zephyr-venv) $ code linux.code-workspace
 ```
 Once vscode is open you can run your workspace tasks.
@@ -59,8 +59,8 @@ Once vscode is open you can run your workspace tasks.
 
 | Memory region | Used Size   | Region Size | %age Used   |
 | ------------- | ----------- | ----------- | ----------- |
-| FLASH         | 186206 B    | 768 KB      | 23.68%      |
-| RAM           | 57120  B    | 384 KB      | 14.53%      |
+| FLASH         | 191046 B    | 768 KB      | 24.29%      |
+| RAM           | 60768  B    | 384 KB      | 15.45%      |
 | QSPI          | 0     GB    | 256 MB      | 0.00%       |
 | DTCM          | 12544  B    | 128 KB      | 9.57%       |
 | IDT_LIST      | 0     GB    | 2   KB      | 0.00%       |
@@ -107,15 +107,15 @@ Once vscode is open you can run your workspace tasks.
 
 - [x] Build project with MCUBoot
 
-- [ ] Download a binary file with HTTP client
+- [x] Download a binary file with HTTP client
 
-- [ ] Boot on the new image after downloading the binary file
+- [x] Boot on the new image after downloading the binary file
 
-- [ ] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
+- [x] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
 
 - [ ] Solve the Shared Callback Registration problem in the Network class
 
-- [ ] Add application events manager using zbus
+- [x] Add application events manager using zbus
 
 - [ ] Add a script to download and setup the project (intellisense, structure, venv...)
 

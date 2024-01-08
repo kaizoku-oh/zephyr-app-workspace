@@ -16,5 +16,7 @@ target_sources(app PRIVATE
   src/Storage.cpp
   src/HttpClient.cpp
   src/EventManager.cpp
-  src/ServiceUpdater.cpp
+  src/Updater.cpp
+  src/AppAcquisition.cpp
+  src/AppTelemetry.cpp
 )

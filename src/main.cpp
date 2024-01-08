@@ -16,24 +16,28 @@ LOG_MODULE_REGISTER(main);
 #include "HttpClient.h"
 #include "Button.h"
 
+static event_t event = {.id = EVENT_INITIAL_VALUE};
+
 int main(void) {
-  event_t event = {.id = EVENT_BUTTON_PRESSED};
 
-  const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
-  Button button(&buttonGpio);
-
+  // Connect to network
   Network& network = Network::getInstance();
 
   network.onGotIP([](const char *ipAddress) {
-    event_t event = {.id = EVENT_NETWORK_AVAILABLE};
-    zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+    event.id = EVENT_NETWORK_AVAILABLE;
+    sendEvent(&event, K_NO_WAIT);
   });
 
   network.start();
 
+  // Monitor button press
+  const struct gpio_dt_spec buttonGpio = GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0});
+  Button button(&buttonGpio);
+
   while (true) {
     if (button.isPressed()) {
-      zbus_chan_pub(&eventsChannel, &event, K_NO_WAIT);
+      event.id = EVENT_BUTTON_PRESSED;
+      sendEvent(&event, K_NO_WAIT);
     }
     k_msleep(100);
   }
