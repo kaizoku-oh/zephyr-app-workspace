@@ -25,7 +25,7 @@ int main(void) {
 
   network.onGotIP([](const char *ipAddress) {
     event.id = EVENT_NETWORK_AVAILABLE;
-    sendEvent(&event, K_NO_WAIT);
+    publishEvent(&event, K_NO_WAIT);
   });
 
   network.start();
@@ -37,7 +37,7 @@ int main(void) {
   while (true) {
     if (button.isPressed()) {
       event.id = EVENT_BUTTON_PRESSED;
-      sendEvent(&event, K_NO_WAIT);
+      publishEvent(&event, K_NO_WAIT);
     }
     k_msleep(100);
   }

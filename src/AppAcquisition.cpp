@@ -89,7 +89,7 @@ static void takeMeasurementsAction() {
 
   // Publish the <EVENT_SENSOR_DATA_READY> event on <eventsChannel>
   event.id = EVENT_SENSOR_DATA_READY;
-  sendEvent(&event, K_NO_WAIT);
+  publishEvent(&event, K_NO_WAIT);
 }
 
 static void onButtonPressAction() {

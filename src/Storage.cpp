@@ -58,6 +58,9 @@ Storage::~Storage() {
 int Storage::read(uint16_t id, void *buffer, size_t length) {
   int ret = 0;
 
+  assert(buffer);
+  assert(length);
+
   // Read an entry by its id from the NVS file system
   ret = nvs_read(&this->fs, id, buffer, sizeof(buffer));
 

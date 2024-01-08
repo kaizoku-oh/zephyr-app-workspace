@@ -78,7 +78,7 @@ void processEvent(event_t *event, const event_action_pair_t *eventActionList, ui
   }
 }
 
-int sendEvent(event_t *event, k_timeout_t timeout) {
+int publishEvent(event_t *event, k_timeout_t timeout) {
   int ret = 0;
 
   assert(event);

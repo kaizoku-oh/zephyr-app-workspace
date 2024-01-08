@@ -13,7 +13,7 @@ LOG_MODULE_REGISTER(AppTelemetry);
 #include "HttpClient.h"
 
 // Function declaration of thread handlers
-static void AppTelemetryThreadHandler();
+static void telemetryThreadHandler();
 
 // Function declaration of event actions
 static void onButtonPressAction();
@@ -24,13 +24,13 @@ static void onNetworkAvailableAction();
 static int prepareData(char *data, uint32_t *length);
 
 // ZBUS subscribers definition
-ZBUS_SUBSCRIBER_DEFINE(AppTelemetrySubscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(telemetrySubscriber, 4);
 
 // Add a subscriber observer to ZBUS events channel
-ZBUS_CHAN_ADD_OBS(eventsChannel, AppTelemetrySubscriber, 4);
+ZBUS_CHAN_ADD_OBS(eventsChannel, telemetrySubscriber, 4);
 
 // Thread definition
-K_THREAD_DEFINE(AppTelemetryThread, 4096, AppTelemetryThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(AppTelemetryThread, 4096, telemetryThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 static const event_action_pair_t eventActionList[] {
   {EVENT_SENSOR_DATA_READY, sendDataAction          },
@@ -38,12 +38,12 @@ static const event_action_pair_t eventActionList[] {
   {EVENT_NETWORK_AVAILABLE, onNetworkAvailableAction},
 };
 
-static void AppTelemetryThreadHandler() {
+static void telemetryThreadHandler() {
   int ret = 0;
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
   while (true) {
-    ret = waitForEvent(&AppTelemetrySubscriber, &event, K_FOREVER);
+    ret = waitForEvent(&telemetrySubscriber, &event, K_FOREVER);
     if (ret == 0) {
       processEvent(&event, eventActionList, EVENT_ACTION_LIST_SIZE(eventActionList));
     }
@@ -69,7 +69,7 @@ static void sendDataAction() {
     event_t event = {.id = EVENT_SENSOR_DATA_SENT};
 
     LOG_INF("Response(%d bytes): %.*s", response->bodyLength, response->bodyLength, response->body);
-    sendEvent(&event, K_NO_WAIT);
+    publishEvent(&event, K_NO_WAIT);
   });
 }
 

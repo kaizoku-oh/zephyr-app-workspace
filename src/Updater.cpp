@@ -20,7 +20,7 @@ LOG_MODULE_REGISTER(Updater);
 #include "HttpClient.h"
 
 // Function declaration of thread handlers
-static void UpdaterThreadHandler();
+static void updaterThreadHandler();
 
 // Function declaration of event actions
 static void onNetworkAvailableAction();
@@ -33,13 +33,13 @@ static void downloadImage(const char *url, const char *endpoint);
 static void confirmImage();
 
 // ZBUS subscribers definition
-ZBUS_SUBSCRIBER_DEFINE(UpdaterSubscriber, 4);
+ZBUS_SUBSCRIBER_DEFINE(updaterSubscriber, 4);
 
 // Add a subscriber observer to ZBUS events channel
-ZBUS_CHAN_ADD_OBS(eventsChannel, UpdaterSubscriber, 4);
+ZBUS_CHAN_ADD_OBS(eventsChannel, updaterSubscriber, 4);
 
 // Thread definition
-K_THREAD_DEFINE(UpdaterThread, 4096, UpdaterThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_THREAD_DEFINE(updaterThread, 4096, updaterThreadHandler, NULL, NULL, NULL, 7, 0, 0);
 
 static const event_action_pair_t eventActionList[] {
   {EVENT_BUTTON_PRESSED,    startOtaUpdateAction    },
@@ -51,14 +51,14 @@ static struct flash_img_context flashContext = {0};
 static size_t totalDownloadSize = 0;
 static size_t currentDownloadedSize = 0;
 
-static void UpdaterThreadHandler() {
+static void updaterThreadHandler() {
   int ret = 0;
   event_t event = {.id = EVENT_INITIAL_VALUE};
 
   confirmImage();
 
   while (true) {
-    ret = waitForEvent(&UpdaterSubscriber, &event, K_FOREVER);
+    ret = waitForEvent(&updaterSubscriber, &event, K_FOREVER);
     if (ret == 0) {
       processEvent(&event, eventActionList, EVENT_ACTION_LIST_SIZE(eventActionList));
     }
