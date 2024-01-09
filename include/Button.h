@@ -43,6 +43,7 @@ static void buttonThreadHandler() {
 #define BUTTON_H
 
 #include <stdbool.h>
+#include <functional>
 
 enum class Polarity {
 
@@ -54,12 +55,17 @@ enum class Polarity {
 class Button {
 
 public:
+  std::function<void()> callback;
+
   Button(const struct gpio_dt_spec *gpio);
   ~Button();
+
   bool isPressed(Polarity polarity = Polarity::NORMAL);
+  void onPressed(std::function<void()> callback);
 
 private:
   const struct gpio_dt_spec *device;
+  struct gpio_callback callbackData;
 
 };
 

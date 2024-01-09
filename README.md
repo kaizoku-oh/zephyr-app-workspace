@@ -113,7 +113,7 @@ Once vscode is open you can run your workspace tasks.
 
 - [x] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
 
-- [ ] Solve the Shared Callback Registration problem in the Network class
+- [ ] Solve the Shared Callback Registration problem in the Network class (broadcast an event)
 
 - [x] Add application events manager using zbus
 
@@ -121,7 +121,11 @@ Once vscode is open you can run your workspace tasks.
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
 
-- [ ] Add asserts on arguments for all user class methods
+- [x] Add asserts on arguments for all user class methods
+
+- [ ] Control actuators (servos, dc motors...) with PWM
+
+- [ ] Add TLS to HttpClient class
 
 - [ ] Add thread safety to user classes
 

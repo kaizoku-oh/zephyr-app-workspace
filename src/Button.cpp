@@ -9,18 +9,20 @@ LOG_MODULE_REGISTER(Button);
 // User C++ class headers
 #include "Button.h"
 
+static void gpioCallback(const struct device *dev, struct gpio_callback *callbackData, uint32_t pins);
+
 Button::Button(const struct gpio_dt_spec *gpio) {
   assert(gpio);
 
   this->device = gpio;
 
   if (!gpio_is_ready_dt(gpio)) {
-    LOG_ERR("Error: button device %s is not ready\n", gpio->port->name);
+    LOG_ERR("Error: button device %s is not ready", gpio->port->name);
     return;
   }
 
   if (gpio_pin_configure_dt(gpio, GPIO_INPUT) != 0) {
-    LOG_ERR("Error: Failed to configure %s pin %d\n", gpio->port->name, gpio->pin);
+    LOG_ERR("Error: Failed to configure %s pin %d", gpio->port->name, gpio->pin);
     return;
   }
 }
@@ -38,5 +40,28 @@ bool Button::isPressed(Polarity polarity) {
     result = (gpio_pin_get_dt(this->device) == 1) ? true : false;
   }
 
-  return result;  
+  return result;
+}
+
+void Button::onPressed(std::function<void()> callback) {
+  assert(callback);
+
+  this->callback = callback;
+
+  if (gpio_pin_interrupt_configure_dt(this->device, GPIO_INT_EDGE_TO_ACTIVE) != 0) {
+    LOG_ERR("Error: failed to configure interrupt on %s pin %d",
+            this->device->port->name,
+            this->device->pin);
+    return;
+  }
+
+  gpio_init_callback(&this->callbackData, gpioCallback, BIT(this->device->pin));
+  if (gpio_add_callback(this->device->port, &this->callbackData) != 0) {
+    LOG_ERR("Error: failed to add gpio callback");
+    return;
+  }
+}
+
+static void gpioCallback(const struct device *dev, struct gpio_callback *callbackData, uint32_t pins) {
+  // TODO: Find a way to get the Button instance and raise its callback
 }
