@@ -5,17 +5,12 @@
 // Zephyr includes
 #include <zephyr/net/net_ip.h>
 #include <zephyr/net/socket.h>
-#include <zephyr/net/tls_credentials.h>
 #include <zephyr/net/http/client.h>
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(HttpClient);
 
 // User C++ class headers
 #include "HttpClient.h"
-
-#define TLS_PEER_HOSTNAME "localhost"
-#define CA_CERTIFICATE_TAG 1
-#define HTTPS_PORT 4443
 
 /* This is the same cert as what is found in net-tools/https-cert.pem file
  */
@@ -55,47 +50,13 @@ int HttpClient::get(const char *endpoint, std::function<void(HttpResponse *)> ca
   net_sin(&this->socketAddress)->sin_port = htons(port);
   inet_pton(AF_INET, server, &net_sin(&this->socketAddress)->sin_addr);
 
-  if (IS_ENABLED(CONFIG_NET_SOCKETS_SOCKOPT_TLS)) {
-    sec_tag_t sec_tag_list[] = {
-      CA_CERTIFICATE_TAG,
-    };
-
-    this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TLS_1_2);
-    if (this->sock >= 0) {
-      ret = setsockopt(this->sock, SOL_TLS, TLS_SEC_TAG_LIST, sec_tag_list, sizeof(sec_tag_list));
-      if (ret < 0) {
-        LOG_ERR("Failed to set %s secure option (%d)", -errno);
-        ret = -errno;
-      }
-
-      ret = setsockopt(this->sock, SOL_TLS, TLS_HOSTNAME, TLS_PEER_HOSTNAME, sizeof(TLS_PEER_HOSTNAME));
-      if (ret < 0) {
-        LOG_ERR("Failed to set TLS_HOSTNAME " "option (%d)", -errno);
-        ret = -errno;
-      }
-    }
-  } else {
     this->sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  }
 
   if (this->sock < 0) {
     LOG_ERR("Failed to create HTTP socket (%d)\r\n", -errno);
   }
 
   this->callback = callback;
-
-  if (IS_ENABLED(CONFIG_NET_SOCKETS_SOCKOPT_TLS)) {
-    ret = tls_credential_add(CA_CERTIFICATE_TAG,
-                             TLS_CREDENTIAL_CA_CERTIFICATE,
-                             ca_certificate,
-                             sizeof(ca_certificate));
-    if (ret < 0) {
-      LOG_ERR("Failed to register public certificate: %d", ret);
-      return ret;
-    }
-
-    port = HTTPS_PORT;
-  }
 
   // 1. Open TCP connection
   ret = connect(this->sock, &this->socketAddress, sizeof(this->socketAddress));
