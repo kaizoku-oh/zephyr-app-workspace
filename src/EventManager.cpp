@@ -70,6 +70,7 @@ void processEvent(event_t *event, const event_action_pair_t *eventActionList, ui
   for (eventIndex = 0; eventIndex < listLength; eventIndex++) {
     // If the event that needs to be processed is found
     if (event->id == eventActionList[eventIndex].id) {
+      // And has a valid action function
       if (eventActionList[eventIndex].action) {
         // Execute its associated action
         eventActionList[eventIndex].action();

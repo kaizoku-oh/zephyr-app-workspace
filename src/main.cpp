@@ -64,17 +64,18 @@ int main(void) {
   return EXIT_SUCCESS;
 }
 
-
 static void start_http_client() {
   int ret = -1;
-  struct zsock_addrinfo *addr = NULL;
-  struct zsock_addrinfo hints = {0};
-  int resolve_attempts = 10;
   int sock = 0;
+  int resolve_attempts = 10;
   char ip_addr_str[INET_ADDRSTRLEN] {0};
   struct sockaddr_in *ipv4 = NULL;
-
+  struct zsock_addrinfo *addr = NULL;
+  struct zsock_addrinfo hints = {0};
 #if defined(CONFIG_NET_SOCKETS_SOCKOPT_TLS)
+  sec_tag_t sec_tag_opt[] = { CA_CERTIFICATE_TAG };
+  int protocol = IPPROTO_TLS_1_2;
+
   ret = tls_credential_add(CA_CERTIFICATE_TAG,
                            TLS_CREDENTIAL_CA_CERTIFICATE,
                            ca_certificate,
@@ -83,11 +84,6 @@ static void start_http_client() {
     LOG_ERR("Failed to register public certificate: %d", ret);
     return;
   }
-#endif // CONFIG_NET_SOCKETS_SOCKOPT_TLS
-
-#if defined(CONFIG_NET_SOCKETS_SOCKOPT_TLS)
-  sec_tag_t sec_tag_opt[] = { CA_CERTIFICATE_TAG };
-  int protocol = IPPROTO_TLS_1_2;
 #else
   int protocol = IPPROTO_TCP;
 #endif // CONFIG_NET_SOCKETS_SOCKOPT_TLS
@@ -97,7 +93,7 @@ static void start_http_client() {
 
   // Try to resolve DNS
   while (resolve_attempts--) {
-    ret = zsock_getaddrinfo("google.com", "443", &hints, &addr);
+    ret = getaddrinfo("google.com", "443", &hints, &addr);
     if (ret == 0) {
       break;
     }
@@ -114,7 +110,7 @@ static void start_http_client() {
   inet_ntop(AF_INET, &(ipv4->sin_addr), ip_addr_str, INET_ADDRSTRLEN);
   LOG_INF("IPv4 address for google.com: %s", ip_addr_str);
 
-  sock = zsock_socket(addr->ai_family, SOCK_STREAM, protocol);
+  sock = socket(addr->ai_family, SOCK_STREAM, protocol);
   if (sock < 0) {
     LOG_ERR("Failed to create TCP socket");
     return;
@@ -122,18 +118,24 @@ static void start_http_client() {
 
 #if defined(CONFIG_NET_SOCKETS_SOCKOPT_TLS)
   // Set TLS connection options
-  if (setsockopt(sock, SOL_TLS, TLS_SEC_TAG_LIST, sec_tag_opt, sizeof(sec_tag_opt)) < 0) {
+  ret = setsockopt(sock, SOL_TLS, TLS_SEC_TAG_LIST, sec_tag_opt, sizeof(sec_tag_opt));
+  if (ret < 0) {
+    close(sock);
     LOG_ERR("Failed to set TLS_TAG option");
     return;
   }
-  if (setsockopt(sock, SOL_TLS, TLS_HOSTNAME, "google.com", sizeof("google.com")) < 0) {
+  ret = setsockopt(sock, SOL_TLS, TLS_HOSTNAME, "google.com", sizeof("google.com"));
+  if (ret < 0) {
+    close(sock);
     LOG_ERR("Failed to set TLS_HOSTNAME option");
     return;
   }
 #endif // CONFIG_NET_SOCKETS_SOCKOPT_TLS
 
   // Connect to remote address
-  if (zsock_connect(sock, addr->ai_addr, addr->ai_addrlen) < 0) {
+  ret = connect(sock, addr->ai_addr, addr->ai_addrlen);
+  if (ret < 0) {
+    close(sock);
     LOG_ERR("Failed to connect to server");
     return;
   }

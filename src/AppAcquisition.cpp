@@ -10,8 +10,9 @@ LOG_MODULE_REGISTER(AppAcquisition);
 #include "Temperature.h"
 #include "Storage.h"
 
-// Function declaration of thread handlers
+// Function declaration of thread and timer
 static void acquisitionThreadHandler();
+static void acquisitionTimerHandler(struct k_timer *timer);
 
 // Function declaration of event actions
 static void onButtonPressAction();
@@ -24,13 +25,15 @@ ZBUS_SUBSCRIBER_DEFINE(acquisitionSubscriber, 4);
 // Add a subscriber observer to ZBUS events channel
 ZBUS_CHAN_ADD_OBS(eventsChannel, acquisitionSubscriber, 4);
 
-// Thread definition
+// Thread and timer definition
 K_THREAD_DEFINE(acquisitionThread, 1024, acquisitionThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+K_TIMER_DEFINE(acquisitionTimer, acquisitionTimerHandler, NULL);
 
 static const event_action_pair_t eventActionList[] {
-  {EVENT_BUTTON_PRESSED,    onButtonPressAction     },
-  {EVENT_NETWORK_AVAILABLE, onNetworkAvailableAction},
-  {EVENT_SENSOR_DATA_SENT,  takeMeasurementsAction  },
+  {EVENT_BUTTON_PRESSED,        onButtonPressAction     },
+  {EVENT_NETWORK_AVAILABLE,     onNetworkAvailableAction},
+  {EVENT_SENSOR_DATA_SENT,      takeMeasurementsAction  },
+  {EVENT_SENSOR_PERIOD_ELAPSED, takeMeasurementsAction  },
 };
 
 static volatile bool networkIsAvailable = false;
@@ -45,6 +48,10 @@ static void acquisitionThreadHandler() {
       processEvent(&event, eventActionList, EVENT_ACTION_LIST_SIZE(eventActionList));
     }
   }
+}
+
+static void acquisitionTimerHandler(struct k_timer *timer) {
+
 }
 
 static void takeMeasurementsAction() {

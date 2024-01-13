@@ -64,7 +64,7 @@ public:
   void onPressed(std::function<void()> callback);
 
 private:
-  const struct gpio_dt_spec *device;
+  const struct gpio_dt_spec *gpio;
   struct gpio_callback callbackData;
 
 };
