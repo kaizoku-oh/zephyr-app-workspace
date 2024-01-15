@@ -1,0 +1,65 @@
+. ../../../deps/zephyr/dts/arm/st/f7/stm32f767Xi.dtsi
+.. ../../../deps/zephyr/dts/common/mem.h
+.. ../../../deps/zephyr/dts/arm/st/f7/stm32f767.dtsi
+... ../../../deps/zephyr/dts/arm/st/f7/stm32f765.dtsi
+.... ../../../deps/zephyr/dts/arm/st/f7/stm32f7.dtsi
+..... ../../../deps/zephyr/dts/arm/armv7-m.dtsi
+...... ../../../deps/zephyr/dts/common/skeleton.dtsi
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/clock/stm32f7_clock.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/i2c/i2c.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/gpio/gpio.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/pwm/pwm.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/pwm/stm32_pwm.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/dma/stm32_dma.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/adc/stm32f4_adc.h
+...... ../../../deps/zephyr/include/zephyr/dt-bindings/adc/stm32_adc.h
+....... ../../../deps/zephyr/include/zephyr/dt-bindings/adc/adc.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/reset/stm32f2_4_7_reset.h
+...... ../../../deps/zephyr/include/zephyr/dt-bindings/reset/stm32-common.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/memory-controller/stm32-fmc-sdram.h
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/memory-attr/memory-attr.h
+...... ../../../deps/zephyr/include/zephyr/sys/util_macro.h
+....... ../../../deps/zephyr/include/zephyr/sys/util_internal.h
+........ ../../../deps/zephyr/include/zephyr/sys/util_loops.h
+......... ../../../deps/zephyr/include/zephyr/sys/util_listify.h
+........ ../../../deps/zephyr/include/zephyr/sys/util_internal_is_eq.h
+........ ../../../deps/zephyr/include/zephyr/sys/util_internal_util_inc.h
+........ ../../../deps/zephyr/include/zephyr/sys/util_internal_util_dec.h
+........ ../../../deps/zephyr/include/zephyr/sys/util_internal_util_x2.h
+In file included from ../../../deps/zephyr/include/zephyr/dt-bindings/memory-attr/memory-attr.h:9,
+                 from ../../../deps/zephyr/dts/arm/st/f7/stm32f7.dtsi:19,
+                 from ../../../deps/zephyr/dts/arm/st/f7/stm32f765.dtsi:7,
+                 from ../../../deps/zephyr/dts/arm/st/f7/stm32f767.dtsi:8,
+                 from ../../../deps/zephyr/dts/arm/st/f7/stm32f767Xi.dtsi:8,
+                 from ../../../deps/zephyr/boards/arm/nucleo_f767zi/nucleo_f767zi.dts:8:
+../../../deps/zephyr/include/zephyr/sys/util_macro.h:68: warning: "BIT_MASK" redefined
+   68 | #define BIT_MASK(n) (BIT(n) - 1UL)
+      | 
+In file included from ../../../deps/zephyr/include/zephyr/dt-bindings/adc/stm32_adc.h:9,
+                 from ../../../deps/zephyr/include/zephyr/dt-bindings/adc/stm32f4_adc.h:9,
+                 from ../../../deps/zephyr/dts/arm/st/f7/stm32f7.dtsi:15:
+../../../deps/zephyr/include/zephyr/dt-bindings/adc/adc.h:14: note: this is the location of the previous definition
+   14 | #define BIT_MASK(n) ((1 << (n)) - 1)
+      | 
+..... ../../../deps/zephyr/include/zephyr/dt-bindings/memory-attr/memory-attr-arm.h
+..... ../../../deps/zephyr/dts/common/freq.h
+... ../../../deps/zephyr/include/zephyr/dt-bindings/display/panel.h
+. ../../../deps/modules/hal/stm32/dts/st/f7/stm32f767zitx-pinctrl.dtsi
+.. ../../../deps/zephyr/include/zephyr/dt-bindings/pinctrl/stm32-pinctrl.h
+... ../../../deps/zephyr/include/zephyr/dt-bindings/pinctrl/stm32-pinctrl-common.h
+. ../../../deps/zephyr/boards/arm/nucleo_f767zi/arduino_r3_connector.dtsi
+. ../../../deps/zephyr/include/zephyr/dt-bindings/input/input-event-codes.h
+Multiple include guards may be useful for:
+../../../deps/modules/hal/stm32/dts/st/f7/stm32f767zitx-pinctrl.dtsi
+../../../deps/zephyr/boards/arm/nucleo_f767zi/arduino_r3_connector.dtsi
+../../../deps/zephyr/dts/arm/armv7-m.dtsi
+../../../deps/zephyr/dts/arm/st/f7/stm32f7.dtsi
+../../../deps/zephyr/dts/arm/st/f7/stm32f765.dtsi
+../../../deps/zephyr/dts/arm/st/f7/stm32f767.dtsi
+../../../deps/zephyr/dts/arm/st/f7/stm32f767Xi.dtsi
+../../../deps/zephyr/dts/common/skeleton.dtsi
+../../../deps/zephyr/include/zephyr/sys/util_internal_is_eq.h
+../../../deps/zephyr/include/zephyr/sys/util_internal_util_dec.h
+../../../deps/zephyr/include/zephyr/sys/util_internal_util_inc.h
+../../../deps/zephyr/include/zephyr/sys/util_internal_util_x2.h
+../../../deps/zephyr/include/zephyr/sys/util_listify.h

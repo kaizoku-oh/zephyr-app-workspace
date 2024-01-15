@@ -1,0 +1,14 @@
+using sysbus
+$name?="nucleo_f767zi"
+mach create $name
+
+machine LoadPlatformDescription @nucleo_f767zi.repl
+
+showAnalyzer sysbus.usart3
+
+macro reset
+"""
+    sysbus LoadBinary @../../build/zephyr/zephyr.bin 0x08040000
+"""
+
+runMacro $reset
