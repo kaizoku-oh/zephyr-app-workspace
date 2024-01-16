@@ -86,10 +86,12 @@
 			{
 				"label": "Clean (application)",
 				"type": "shell",
-				"command": "rm",
+				"command": "remove-Item",
 				"args": [
-					"-rf",
-					"${workspaceFolder}/app/build",
+					"-path",
+					"app/build",
+					"-Recurse",
+					"-Force",
 				],
 				"problemMatcher": [
 					"$gcc"
@@ -143,7 +145,7 @@
 					"mode=UR",
 					"-w",
 					"app/build/zephyr/zephyr.bin",
-					"0x08040000"
+					"0x08000000"
 				],
 				"problemMatcher": [
 					"$gcc"
