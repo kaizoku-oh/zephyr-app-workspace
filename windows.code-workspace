@@ -1,0 +1,261 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		// Hush CMake
+		"cmake.configureOnOpen": false,
+
+		// IntelliSense
+		"C_Cpp.default.compilerPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
+		"C_Cpp.default.compileCommands": "${workspaceFolder}/app/build/compile_commands.json",
+
+		// File Associations
+		"files.associations": {}
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Build (application)",
+				"type": "shell",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"command": "west",
+				"args": [
+					"build",
+					"${workspaceFolder}/app",
+					"-d",
+					"${workspaceFolder}/app/build",
+					"-p",
+					"auto",
+					"-b",
+					"nucleo_f767zi"
+				],
+				"problemMatcher": [
+					"$gcc"
+				],
+			},
+			{
+				"label": "Build (bootloader)",
+				"type": "shell",
+				"group": {
+					"kind": "build",
+					"isDefault": true
+				},
+				"command": "west",
+				"args": [
+					"build",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr",
+					"-d",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+					"-p",
+					"auto",
+					"-b",
+					"nucleo_f767zi"
+				],
+				"problemMatcher": [
+					"$gcc"
+				],
+			},
+			{
+				"label": "Configurable Build",
+				"type": "shell",
+				"group": {
+					"kind": "build",
+				},
+				"command": "west",
+				"args": [
+					"build",
+					"${workspaceFolder}/app",
+					"-d",
+					"${workspaceFolder}/app/build",
+					"-p",
+					"auto",
+					"-b",
+					"${input:board}"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Clean (application)",
+				"type": "shell",
+				"command": "rm",
+				"args": [
+					"-rf",
+					"${workspaceFolder}/app/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Clean (bootloader)",
+				"type": "shell",
+				"command": "rm",
+				"args": [
+					"-rf",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (west app)",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/app/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (west boot)",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"flash",
+					"-d",
+					"${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer app)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"app/build/zephyr/zephyr.bin",
+					"0x08040000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Flash (STM32CubeProgrammer boot)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"-c",
+					"port=swd",
+					"mode=UR",
+					"-w",
+					"deps/bootloader/mcuboot/boot/zephyr/build/zephyr/zephyr.bin",
+					"0x08000000"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Erase (STM32CubeProgrammer)",
+				"type": "shell",
+				"command": "STM32_Programmer_CLI",
+				"args": [
+					"--connect",
+					"port=swd",
+					"-e",
+					"all"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			},
+			{
+				"label": "Update",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"update"
+				]
+			},
+			{
+				"label": "MenuConfig",
+				"type": "shell",
+				"command": "west",
+				"args": [
+					"build",
+					"${workspaceFolder}/app",
+					"-d",
+					"${workspaceFolder}/app/build",
+					"-p",
+					"auto",
+					"-b",
+					"nucleo_f767zi",
+					"-t",
+					"menuconfig"
+				],
+				"problemMatcher": [
+					"$gcc"
+				]
+			}
+		],
+		"inputs": [
+			{
+				"id": "board",
+				"type": "promptString",
+				"default": "nucleo_f767zi",
+				"description": "See https://www.st.com/en/evaluation-tools/nucleo-f767zi.html"
+			},
+			{
+				"id": "pristine",
+				"type": "pickString",
+				"description": "Choose when to run a pristine build",
+				"default": "auto",
+				"options": [
+					"auto",
+					"always",
+					"never"
+				]
+			}
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Launch",
+				"cwd": "${workspaceFolder}",
+				"executable": "${workspaceFolder}/app/build/zephyr/zephyr.elf",
+				"request": "launch",
+				"type": "cortex-debug",
+				"servertype": "stlink",
+				"device": "STM32F767ZI",
+				"interface": "swd",
+				"runToEntryPoint": "main",
+				"preLaunchTask": "Build",
+				"gdbPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb",
+				"armToolchainPath": "${userHome}/zephyr-sdk-0.16.1/arm-zephyr-eabi/arm-zephyr-eabi/bin",
+			},
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-python.python",
+			"ms-vscode.vscode-embedded-tools",
+			"marus25.cortex-debug",
+			"plorefice.devicetree",
+			"PKief.material-icon-theme",
+			"streetsidesoftware.code-spell-checker"
+		]
+	}
+}

@@ -1,0 +1,196 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build (application)",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "west",
+            "args": [
+                "build",
+                "${workspaceFolder}/app",
+                "-d",
+                "${workspaceFolder}/app/build",
+                "-p",
+                "auto",
+                "-b",
+                "nucleo_f767zi"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        {
+            "label": "Build (bootloader)",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "west",
+            "args": [
+                "build",
+                "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr",
+                "-d",
+                "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+                "-p",
+                "auto",
+                "-b",
+                "nucleo_f767zi"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        {
+            "label": "Configurable Build",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+            },
+            "command": "west",
+            "args": [
+                "build",
+                "${workspaceFolder}/app",
+                "-d",
+                "${workspaceFolder}/app/build",
+                "-p",
+                "auto",
+                "-b",
+                "${input:board}"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clean (application)",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "${workspaceFolder}/app/build",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clean (bootloader)",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Flash (west app)",
+            "type": "shell",
+            "command": "west",
+            "args": [
+                "flash",
+                "-d",
+                "${workspaceFolder}/app/build",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Flash (west boot)",
+            "type": "shell",
+            "command": "west",
+            "args": [
+                "flash",
+                "-d",
+                "${workspaceFolder}/deps/bootloader/mcuboot/boot/zephyr/build",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Flash (STM32CubeProgrammer app)",
+            "type": "shell",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "-c",
+                "port=swd",
+                "mode=UR",
+                "-w",
+                "app/build/zephyr/zephyr.bin",
+                "0x08040000"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Flash (STM32CubeProgrammer boot)",
+            "type": "shell",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "-c",
+                "port=swd",
+                "mode=UR",
+                "-w",
+                "deps/bootloader/mcuboot/boot/zephyr/build/zephyr/zephyr.bin",
+                "0x08000000"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Erase (STM32CubeProgrammer)",
+            "type": "shell",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "--connect",
+                "port=swd",
+                "-e",
+                "all"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Update",
+            "type": "shell",
+            "command": "west",
+            "args": [
+                "update"
+            ]
+        },
+        {
+            "label": "MenuConfig",
+            "type": "shell",
+            "command": "west",
+            "args": [
+                "build",
+                "${workspaceFolder}/app",
+                "-d",
+                "${workspaceFolder}/app/build",
+                "-p",
+                "auto",
+                "-b",
+                "nucleo_f767zi",
+                "-t",
+                "menuconfig"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}

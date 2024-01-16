@@ -12,14 +12,20 @@ jobs:
     container: ghcr.io/zephyrproject-rtos/ci:v0.26.2 
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
       - name: Clone the repo
         run: |
-          west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr main workspace
+          west init -m https://github.com/kaizoku-oh/zephyr-app-workspace --mr $BRANCH_NAME workspace
           cd workspace
           west update
 
-      - name: Build firmware
+      - name: Build bootloader
+        working-directory: workspace
+        run: |
+          west build deps/bootloader/mcuboot/boot/zephyr -d deps/bootloader/mcuboot/boot/zephyr/build -b nucleo_f767zi
+
+      - name: Build application
         working-directory: workspace
         run: |
           west build app -d app/build -b nucleo_f767zi
