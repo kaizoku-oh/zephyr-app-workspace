@@ -1,7 +1,7 @@
 # Generate a REPL file for your board
 
 ```bash
-# Generate flatened dts for nucleo_f767zi board
+# Generate flattened dts for nucleo_f767zi board
 (zephyr-venv) $ gcc -H -E -P -x assembler-with-cpp \
     -I ../../../deps/zephyr/include \
     -I ../../../deps/zephyr/dts \

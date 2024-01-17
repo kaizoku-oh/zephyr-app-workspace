@@ -1,0 +1,32 @@
+:name: STM32F4 Discovery
+:description: This script runs Zephyr on STM32F4 Discovery.
+
+using sysbus
+$name?="stm32f4_disco"
+mach create $name
+machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
+
+cpu PerformanceInMips 125
+
+$bin?=@../../build/zephyr/zephyr.elf
+
+showAnalyzer sysbus.usart2
+
+### Set random board UNIQUE ID ###
+python "import _random"
+python "rand = _random.Random()"
+
+$id1 = `python "print rand.getrandbits(32)"`
+$id2 = `python "print rand.getrandbits(32)"`
+$id3 = `python "print rand.getrandbits(32)"`
+
+macro reset
+"""
+    sysbus LoadELF $bin
+
+    sysbus WriteDoubleWord 0x1FFF7A10 $id1
+    sysbus WriteDoubleWord 0x1FFF7A14 $id2
+    sysbus WriteDoubleWord 0x1FFF7A18 $id3
+"""
+
+runMacro $reset
