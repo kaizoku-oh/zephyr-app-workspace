@@ -30,12 +30,10 @@ Serial::~Serial() {
 }
 
 void Serial::write(uint8_t *data, uint32_t length) {
-  size_t index;
-
   assert(data);
   assert(length);
 
-  for (index = 0; index < length; index++) {
+  while (length--) {
     uart_poll_out(this->device, *data++);
   }
 }
@@ -95,6 +93,8 @@ static void serialCallback(const struct device *device, void *userData) {
 
   ret = uart_fifo_read(device, &rxByte, sizeof(rxByte));
   if (ret == 1) {
+    // TODO: Only raise the callback of the current device:
+    // if (device == instance->getDevice()) { instance->callback() }
     if (serialInstance->callback) {
       serialInstance->callback(&rxByte, ret);
     }

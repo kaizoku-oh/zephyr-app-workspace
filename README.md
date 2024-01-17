@@ -113,6 +113,8 @@ Once vscode is open you can run your workspace tasks.
 
 - [x] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
 
+- [ ] Add internal ring buffer + read() method in Serial class
+
 - [ ] Add USB support to Serial class
 
 - [ ] Solve the Shared Callback Registration problem in the Network class (broadcast an event)
