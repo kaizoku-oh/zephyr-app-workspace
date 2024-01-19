@@ -39,7 +39,7 @@ static void serialThreadHandler() {
 
   // Continuously read serial
   while (true) {
-    serial.write("Hello world!\r\n");;
+    serial.write((uint8_t *)"Hello world!\r\n", sizeof("Hello world!\r\n")-1);
     k_msleep(SERIAL_THREAD_SLEEP_TIME_MS);
   }
 }
