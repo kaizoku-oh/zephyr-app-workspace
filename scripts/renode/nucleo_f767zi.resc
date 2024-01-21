@@ -1,16 +1,31 @@
+:name: Nucleo-F767zi
+:description: This script runs Zephyr on Nucleo-F767zi.
+
 using sysbus
 $name?="nucleo_f767zi"
 mach create $name
+machine LoadPlatformDescription @app/scripts/renode/nucleo_f767zi.repl
+machine LoadPlatformDescription @app/scripts/renode/add-peripherals.repl
 
-machine LoadPlatformDescription @nucleo_f767zi.repl
-machine LoadPlatformDescription @add-peripherals.repl
+$elf?=@app/build/zephyr/zephyr.elf
 
 showAnalyzer sysbus.usart3
 
+### Set random board UNIQUE ID ###
+python "import _random"
+python "rand = _random.Random()"
+
+$id1 = `python "print rand.getrandbits(32)"`
+$id2 = `python "print rand.getrandbits(32)"`
+$id3 = `python "print rand.getrandbits(32)"`
+
 macro reset
 """
-    sysbus LoadELF @../../build/zephyr/zephyr.elf
-    cpu0 VectorTableOffset `sysbus GetSymbolAddress "_vector_table"`
+    sysbus LoadELF $elf
+
+    sysbus WriteDoubleWord 0x1FFF7A10 $id1
+    sysbus WriteDoubleWord 0x1FFF7A14 $id2
+    sysbus WriteDoubleWord 0x1FFF7A18 $id3
 """
 
 runMacro $reset

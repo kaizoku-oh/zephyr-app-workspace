@@ -12,31 +12,20 @@ Usage example:
 // User C++ class headers
 #include "Temperature.h"
 
-// Thread handler function declaration
-static void temperatureThreadHandler();
+// Variable to hold temperature reading in Celsius
+double temperatureReading = 0;
 
-// Delay value used inside thread loops to yield back to scheduler
-static constexpr uint32_t TEMPERATURE_THREAD_SLEEP_TIME_MS = 1000;
+// Reference die temperature device from device tree
+const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
 
-// Threads definition
-K_THREAD_DEFINE(temperatureThread, 1024, temperatureThreadHandler, NULL, NULL, NULL, 7, 0, 0);
+// Create local object using the device
+Temperature temperature(temperatureDevice);
 
-static void temperatureThreadHandler() {
-  // Variable to hold temperature reading in Celsius
-  double temperatureReading = 0;
-
-  // Reference die temperature device from device tree
-  const struct device *temperatureDevice = DEVICE_DT_GET(DT_NODELABEL(die_temp));
-
-  // Create local object using the device
-  Temperature temperature(temperatureDevice);
-
-  // Continuously read temperature
-  while (true) {
-    temperatureReading = temperature.read();
-    printk("CPU temperature: %.1f °C\r\n", temperatureReading);
-    k_msleep(TEMPERATURE_THREAD_SLEEP_TIME_MS);
-  }
+// Continuously read temperature
+while (true) {
+  temperatureReading = temperature.read();
+  printk("CPU temperature: %.1f °C\r\n", temperatureReading);
+  k_msleep(1000);
 }
 */
 

@@ -113,7 +113,7 @@ Once vscode is open you can run your workspace tasks.
 
 - [x] Add Updater class/service to manage firmware upgrades (on top of HttpClient, DFU subsystem)
 
-- [ ] Add internal ring buffer + read() method in Serial class
+- [x] Add console and shell over USB on stm32f4_disco
 
 - [ ] Add USB support to Serial class
 
@@ -124,6 +124,8 @@ Once vscode is open you can run your workspace tasks.
 - [ ] Add a script to download and setup the project (intellisense, structure, venv...)
 
 - [ ] Automate updating the README.md Build footprint table automatically by running a post build
+
+- [ ] Add stm32f4_disco LEDs and button to repl file
 
 - [x] Add asserts on arguments for all user class methods
 
