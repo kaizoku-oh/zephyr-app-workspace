@@ -10,7 +10,7 @@ target_sources(app PRIVATE
   src/main.cpp
   # src/Button.cpp
   # src/Led.cpp
-  # src/Temperature.cpp
+  src/Temperature.cpp
   # src/Serial.cpp
   # src/Network.cpp
   # src/Storage.cpp
